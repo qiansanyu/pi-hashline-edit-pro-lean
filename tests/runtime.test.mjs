@@ -20,13 +20,13 @@ function anchorsFrom(result) {
   return new Map(
     text
       .split("\n")
-      .map((line) => /^([A-Za-z0-9]{4})│(.*)$/.exec(line))
+      .map((line) => /^([a-z]{5})│(.*)$/.exec(line))
       .filter(Boolean)
       .map((match) => [match[2], match[1]]),
   );
 }
 
-test("preserves upstream 6.4.5 read, replace, insert, undo, and write-hook behavior", async () => {
+test("preserves upstream 7.1.1 read, replace, insert, undo, and write-hook behavior", async () => {
   const file = join(cwd, "sample.txt");
   await writeFile(file, "alpha\nbeta\n");
 
@@ -74,8 +74,8 @@ test("preserves upstream 6.4.5 read, replace, insert, undo, and write-hook behav
     ctx,
   );
   const firstAnchors = anchorsFrom(firstRead);
-  assert.equal(firstAnchors.get("alpha")?.length, 4);
-  assert.equal(firstAnchors.get("beta")?.length, 4);
+  assert.equal(firstAnchors.get("alpha")?.length, 5);
+  assert.equal(firstAnchors.get("beta")?.length, 5);
 
   // 6.x is anchor-only with one exact `text` string.
   await byName.replace.execute(

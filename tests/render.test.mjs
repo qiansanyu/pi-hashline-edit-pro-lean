@@ -64,7 +64,7 @@ test("autoRead off uses upstream's neutral re-read line", async () => {
 test("codemode passes upstream's script lines through", async () => {
   const { lines, all } = await render({}, { codemode: true });
   assert.ok(lines("replace").some((line) => line.includes("codemode script calls apply immediately")));
-  assert.ok(all.some((line) => line.includes("When called from a codemode script")));
+  assert.ok(all.some((line) => /when called from a codemode script/i.test(line)));
 });
 
 test("Pi's plain grep keeps its own text", async () => {
@@ -72,4 +72,45 @@ test("Pi's plain grep keeps its own text", async () => {
   const grep = tools.get("grep");
   assert.equal(grep.description.includes("anchor│"), false);
   assert.equal((grep.promptGuidelines ?? []).some((line) => line.startsWith("grep: set literal")), false);
+});
+
+test("no model-facing text names a retired field or an anchor length", async () => {
+  const { all, tools } = await render({});
+  const text = [
+    ...all,
+    ...[...tools.values()].flatMap((tool) => [tool.description ?? "", tool.promptSnippet ?? ""]),
+  ];
+  for (const retired of ["old_string", "new_string", "4-char", "four-character", "Four-character"]) {
+    assert.equal(
+      text.some((line) => line.includes(retired)),
+      false,
+      `model-facing text still names "${retired}"`,
+    );
+  }
+  // replace_match is the one rule lean states, so it must use 7.x's field names.
+  const guideline = tools.get("replace_match").promptGuidelines.find((line) => line.startsWith("replace_match:"));
+  assert.ok(guideline.includes("match"));
+  assert.ok(guideline.includes("replacement"));
+});
+
+test("outline is off by default and stays lean when enabled", async () => {
+  const off = await render({});
+  // The tool stays registered while off (upstream's gate is setActiveTools), so the
+  // model-visible signal is the preference line: it lists outline only while on.
+  assert.equal(
+    off.tools.get("outline").promptGuidelines.length, 1, "outline text stays lean while off");
+  assert.equal(
+    off.tools.get("read").promptGuidelines.some((line) => line.includes("`outline`")),
+    false,
+  );
+
+  const on = await render({ outlineEnabled: true });
+  const outline = on.tools.get("outline");
+  assert.ok(outline.description.length < 100);
+  assert.ok(outline.promptSnippet.length < 50);
+  assert.deepEqual(outline.promptGuidelines.map((line) => line.slice(0, 8)), ["outline:"]);
+  // The preference line is upstream's, so it lists outline only while it is on.
+  assert.ok(
+    on.tools.get("read").promptGuidelines.some((line) => line.startsWith("Remember") && line.includes("`outline`")),
+  );
 });

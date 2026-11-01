@@ -7,7 +7,7 @@
 
 [English](README.md)
 
-[`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro) 的 Token 精简版 Pi 包装层。当前固定使用完整的上游 `6.4.6` 运行时，只精简长期进入模型上下文的工具文本。
+[`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro) 的 Token 精简版 Pi 包装层。当前固定使用完整的上游 `7.1.1` 运行时，只精简长期进入模型上下文的工具文本。
 
 ## 上下文占用
 
@@ -25,7 +25,7 @@
 
 ## 保留的能力
 
-- 四字符 Hashline 锚点与已提供锚点校验。
+- 五字符小写 Hashline 锚点与已提供锚点校验。
 - 安全的 anchor-only `replace`、`replace_match`、`insert`、`copy`、`move`（默认不传 `path`）和按文件撤销。
 - 返回锚点的 ripgrep 搜索，工具名为 `grep`，默认启用。
 - Hash store、自动读取、文件检查、write 锚点回显防护和上游 session hooks。
@@ -48,6 +48,7 @@ pi install git:github.com/kunkun9527/pi-hashline-edit-pro-lean
 
 ```text
 read
+outline            # 上游的符号地图，上游默认关闭
 replace            # anchor-only：默认不传 path
 replace_match      # 在锚点范围内替换精确子串
 insert             # anchor-only：默认不传 path
@@ -56,7 +57,7 @@ grep               # 带锚点的 ripgrep，替代 Pi 内置 grep
 undo_last_change   # 仍需要 path
 ```
 
-必须复制 `read` 或 `grep` 返回的四字符锚点，绝不要猜测。`replace` 和 `insert` 接收一个原样写入的 `text` 字符串，字符串里的换行就是分行；`replace` 中 `text: ""` 表示删除所选范围。同一条消息里对同一文件的编辑会合并成一个 batch，共用一个 diff 和一次撤销。
+必须复制 `read`、`grep` 或 `outline` 返回的五字符小写锚点，绝不要猜测。`replace` 和 `insert` 接收一个原样写入的 `text` 字符串，字符串里的换行就是分行；`replace` 中 `text: ""` 表示删除所选范围。同一条消息里对同一文件的编辑会合并成一个 batch，共用一个 diff 和一次撤销。
 
 参数容错：校验之前，`replace` 把已废弃的 `replacement_text` / `replacement_lines`、`insert` 把 `lines` 当作 `text`，与 `path` 相同的 `ref` 会被丢弃。有歧义的输入（包括缺 `remove_to`、`path` 或锚点）仍按校验报错。
 
@@ -64,7 +65,7 @@ undo_last_change   # 仍需要 path
 
 配置保存在 `~/.config/pi-hashline-edit-pro/config.json`（或 `$PI_HASHLINE_DIR/config.json`），与上游共用，用 `/hashline-config` 修改。
 
-默认值与上游一致：八个工具全部开启。`6.4.5-lean.2` 及更早版本加载时会往配置里写入 `replaceMatchEnabled: false`（更早的版本还会写 `copyMoveEnabled: false`），升级后这些值会保留，请在 `/hashline-config` 里把工具重新打开，或者写入：
+默认值与上游一致：除 `outline` 外全部开启，`outline` 需要先在 `/hashline-config` 里打开。`6.4.5-lean.2` 及更早版本加载时会往配置里写入 `replaceMatchEnabled: false`（更早的版本还会写 `copyMoveEnabled: false`），升级后这些值会保留，请在 `/hashline-config` 里把工具重新打开，或者写入：
 
 ```json
 {
@@ -86,8 +87,8 @@ undo_last_change   # 仍需要 path
 
 ## 版本
 
-- Lean 包装层：`6.4.6-lean.3`
-- 上游运行时：`pi-hashline-edit-pro@6.4.6`
+- Lean 包装层：`7.1.1-lean.1`
+- 上游运行时：`pi-hashline-edit-pro@7.1.1`
 - Pi：`>=0.99.0`
 - Node.js：`>=22.19.0`
 

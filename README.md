@@ -7,7 +7,7 @@
 
 [简体中文](https://github.com/kunkun9527/pi-hashline-edit-pro-lean/blob/main/README_zh-CN.md)
 
-A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro). It pins the complete upstream `6.4.6` runtime while shortening persistent provider-facing tool text.
+A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro). It pins the complete upstream `7.1.1` runtime while shortening persistent provider-facing tool text.
 
 ## Context footprint
 
@@ -25,7 +25,7 @@ Measured with Pi 1.2.0 in separate temporary processes with empty working direct
 
 ## What it keeps
 
-- Four-character Hashline anchors and served-anchor validation.
+- Five-character lowercase Hashline anchors and served-anchor validation.
 - Safe anchor-only `replace`, `replace_match`, `insert`, `copy`, and `move` operations (no `path` by default), plus per-file undo.
 - Anchored ripgrep results under the `grep` name, enabled by default.
 - Hash store, automatic reads, file checks, write-echo protection, and upstream session hooks.
@@ -34,7 +34,7 @@ Measured with Pi 1.2.0 in separate temporary processes with empty working direct
 
 ## Why it is lean
 
-Only model-facing prose is trimmed, and every line is upstream's own wording condensed: concise descriptions, one-line tool-list snippets, and short versions of upstream's usage rules; each rule is said once, so parameter descriptions are removed except upstream's text for range bounds, copy's source and destination (move takes the same fields), and `text` (its newline note moves to the shared edit rule); no prompt resources and no rules of our own are added. Rules that upstream already enforces with an error naming the fix (unread range lines, overlapping batch ranges, stale anchors, path ownership) are left to that error instead of the prompt. The prompt keeps upstream's rules whose violation would silently produce a wrong edit or lose something an error cannot give back: the `anchor│content` row format, escape decoding, batch and single-slot undo, append and deletion semantics. Lines upstream shows only under some settings (replace_match or copy/move off, autoRead off, codemode on) follow those settings; upstream's tool-preference line, which it repeats on every tool, is kept once on `read`, and codemode-only guidelines pass through unchanged. Runtime behavior, defaults, validation, error contracts, and tool schemas are upstream's.
+Only model-facing prose is trimmed, and every line is upstream's own wording condensed: concise descriptions, one-line tool-list snippets, and short versions of upstream's usage rules; each rule is said once, so parameter descriptions are removed except upstream's text for range bounds, copy's source and destination (move takes the same fields), `text` (its newline note moves to the shared edit rule), and `outline`'s `depth`; no prompt resources and no rules of our own are added. Rules that upstream already enforces with an error naming the fix (unread range lines, overlapping batch ranges, stale anchors, path ownership) are left to that error instead of the prompt. The prompt keeps upstream's rules whose violation would silently produce a wrong edit or lose something an error cannot give back: the `anchor│content` row format, escape decoding, batch and single-slot undo, append and deletion semantics. Lines upstream shows only under some settings (replace_match or copy/move off, autoRead off, codemode on) follow those settings; upstream's tool-preference line, which it repeats on every tool, is kept once on `read`, and codemode-only guidelines pass through unchanged. Runtime behavior, defaults, validation, error contracts, and tool schemas are upstream's.
 
 ## Install
 
@@ -48,6 +48,7 @@ Requires Pi `>=0.99.0`. Do not load another Hashline wrapper or the upstream pac
 
 ```text
 read
+outline            # upstream's symbol map; upstream keeps it off by default
 replace            # anchor-only: no path by default
 replace_match      # exact substring inside an anchored range
 insert             # anchor-only: no path by default
@@ -56,15 +57,15 @@ grep               # anchored ripgrep; replaces Pi's built-in grep
 undo_last_change   # still requires path
 ```
 
-Always copy the four-character anchors returned by `read` or `grep`. Never invent anchors. `replace` and `insert` take one exact `text` string; line breaks inside it separate lines, and `text: ""` deletes the selected range in `replace`. Same-file edits in one message form one batch with a combined diff and a single undo.
+Always copy the five-character lowercase anchors returned by `read`, `grep`, or `outline`. Never invent anchors. `replace` and `insert` take one exact `text` string; line breaks inside it separate lines, and `text: ""` deletes the selected range in `replace`. Same-file edits in one message form one batch with a combined diff and a single undo.
 
-Forgiving arguments: before validation, `replace` accepts the retired `replacement_text` / `replacement_lines` and `insert` accepts `lines` as `text`, and a `ref` equal to `path` is dropped. Anything ambiguous (including a missing `remove_to`, `path` or anchor) still fails validation.
+Forgiving arguments: before validation, `replace` accepts the retired `replacement_text` / `replacement_lines` and `insert` accepts `lines` as `text`, and a `ref` equal to `path` is dropped before upstream rejects it as an unknown field. Anything ambiguous (including a missing `remove_to`, `path` or anchor) still fails validation.
 
 ## Configuration
 
 Settings live in `~/.config/pi-hashline-edit-pro/config.json` (or `$PI_HASHLINE_DIR/config.json`) and are shared with upstream. Use `/hashline-config` to change them.
 
-Defaults are upstream's: all eight tools are on. Versions up to `6.4.5-lean.2` wrote `replaceMatchEnabled: false` (and older ones `copyMoveEnabled: false`) into the config on load; those values stay after upgrading, so turn the tools back on in `/hashline-config`, or set:
+Defaults are upstream's: every tool but `outline` is on, and `outline` is off until you enable it in `/hashline-config`. Versions up to `6.4.5-lean.2` wrote `replaceMatchEnabled: false` (and older ones `copyMoveEnabled: false`) into the config on load; those values stay after upgrading, so turn the tools back on in `/hashline-config`, or set:
 
 ```json
 {
@@ -86,8 +87,8 @@ Start a fresh Pi session after upgrading so the model receives the new schemas a
 
 ## Versions
 
-- Lean wrapper: `6.4.6-lean.3`
-- Upstream runtime: `pi-hashline-edit-pro@6.4.6`
+- Lean wrapper: `7.1.1-lean.1`
+- Upstream runtime: `pi-hashline-edit-pro@7.1.1`
 - Pi: `>=0.99.0`
 - Node.js: `>=22.19.0`
 

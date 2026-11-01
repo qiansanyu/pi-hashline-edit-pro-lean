@@ -27,12 +27,12 @@ Baseline (`bench/snapshots/`):
 | autoRead off | 2 831 B | 15 209 B | 12 378 B (81%) |
 | codemode | 4 666 B | 18 427 B | 13 761 B (75%) |
 
-| combo | lean unported on 7.1.1 | upstream 7.1.1 | lean saves |
+| combo | lean 7.1.1 | upstream 7.1.1 | lean saves |
 |---|---|---|---|
-| default | 5 147 B | 14 663 B | 9 516 B (65%) |
-| no replace_match / no copy-move | 4 967 B | 14 024 B | 9 057 B (65%) |
-| autoRead off | 5 089 B | 14 272 B | 9 183 B (64%) |
-| codemode | 6 875 B | 16 476 B | 9 601 B (58%) |
+| default | 3 415 B | 14 663 B | 11 248 B (77%) |
+| no replace_match / no copy-move | 3 235 B | 14 024 B | 10 789 B (77%) |
+| autoRead off | 3 323 B | 14 272 B | 10 949 B (77%) |
+| codemode | 5 034 B | 16 476 B | 11 442 B (69%) |
 
 Upstream's bulk on 6.4.6 is `promptGuidelines` (8 926 B of 16 298 B) because the shared
 rules — preference line, batch, path, diff, payload — repeat on every tool. 7.1.1
@@ -42,8 +42,13 @@ therefore falls from 82% to 65% *before* the wrapper itself is ported — that i
 number the port has to improve on, and the `outline` line is the largest single item
 left unported.
 
-`7.1.1-lean-unported` is this wrapper built against 7.1.1 while its text tables were
-still 6.4.6's, which is why `outline` passes through untrimmed there.
+Ported figures: 3 415 B for nine tools. `outline` contributes 351 B, so the eight tools
+7.1.1 shares with 6.4.6 cost 3 064 B against 2 889 B — 175 B more, spent on the facts 7.x
+added (send the edits you already have anchors for in one batch, rows the diff omits keep
+their anchors, `match`/replacement semantics, and `outline`'s depth ladder).
+
+`7.1.1-lean-unported` in `bench/snapshots/` keeps the pre-port run for reference: 5 147 B,
+because `outline` passed through untrimmed at 2 272 B.
 
 ## repro
 

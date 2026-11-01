@@ -1,4 +1,4 @@
-// pi-hashline-edit-pro-lean: full pi-hashline-edit-pro@6.4.6 runtime,
+// pi-hashline-edit-pro-lean: full pi-hashline-edit-pro@7.1.1 runtime,
 // with concise provider-facing tool/command text and local collapsed-display support.
 //
 // Design: delegate 100% of the runtime to upstream by calling its default
@@ -6,13 +6,16 @@
 // upstream's own wording condensed: short tool descriptions and snippets,
 // guidelines kept only where a slip silently produces a wrong edit, and
 // parameter schemas without per-field descriptions except upstream's text for
-// range bounds, copy/move source and destination, and replace/insert text.
+// range bounds, copy/move source and destination, replace/insert text, and
+// outline depth.
 // No rule of our own is added; defaults, behavior and error semantics are
 // upstream's.
 //
-// 6.x contract: replace/insert take one exact `text` string ("" deletes in
-// replace); the anchored search tool is named `grep`. Edit tools resolve the
-// file from anchors alone; undo_last_change still requires `path`.
+// 7.x contract: replace/insert take one exact `text` string ("" deletes in
+// replace), replace_match takes `match`/`replacement`, and the anchored search
+// tool is named `grep`. Edit tools resolve the file from anchors alone;
+// undo_last_change still requires `path`. Anchors are 5 lowercase letters, so
+// no lean text states an anchor length — any served row shows it.
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import upstream from "pi-hashline-edit-pro";
 import { TEXT_ENDING_NOTE } from "pi-hashline-edit-pro/src/constants";
@@ -48,9 +51,10 @@ function decorateWithCollapsedDisplay<T extends CollapsedDisplayTool>(tool: T): 
 // gives a wrong result or loses something the error cannot give back (the
 // single undo slot, escape decoding, the anchor-row format).
 const DESC: Record<string, string> = {
-  read: "Read a file as anchor│content rows (4-char anchors); supports paging and images.",
+  read: "Read a file as anchor│content rows; supports paging and images.",
+  outline: "Map the symbols of a file, folder, or glob as anchor rows before reading it.",
   replace: "Replace whole anchored lines.",
-  replace_match: "Replace exact fragments within anchored lines.",
+  replace_match: "Replace one exact fragment across anchored lines.",
   insert: "Insert new lines before or after an anchor.",
   copy: "Copy an anchored block verbatim, within or across files.",
   move: "Move an anchored block verbatim, within or across files.",
@@ -64,6 +68,7 @@ const REPLACE_MATCH_ROUTE = " For part of a line, use replace_match.";
 // Pi lists only tools that have a snippet under "Available tools" in the system prompt.
 const SNIPPET: Record<string, string> = {
   read: "Read files with line anchors",
+  outline: "Map a file's symbols before reading it",
   replace: "Replace anchored lines",
   replace_match: "Replace fragments in lines",
   insert: "Insert lines at an anchor",
@@ -82,20 +87,23 @@ const has = (up: string[], marker: string) => up.some((line) => line.includes(ma
 const GUIDE: Record<string, (up: string[]) => string[]> = {
   read: (up) =>
     has(up, "post-edit diff")
-      ? ["read: after an edit, + and space diff rows carry live anchors and - rows are dead; read again only for anchors you lack."]
+      ? ["read: after an edit, + and space diff rows carry live anchors, - rows are dead, and rows the diff omits keep theirs; read again only for anchors you lack."]
       : has(up, "call again after an edit")
         ? ["read: call again after an edit when you need anchors you lack."]
         : [],
+  outline: () => [
+    "outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it.",
+  ],
   replace: (up) => [
     "replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.",
     `edit tools: text is the exact content without anchor prefixes; escapes are decoded once, so \\uXXXX is the character and \\\\uXXXX stays literal. ${TEXT_ENDING_NOTE}`,
-    "edit tools: same-file calls in one message form one batch; one undo reverts all.",
+    "edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all.",
     ...(has(up, "Script calls apply immediately")
       ? ["edit tools: codemode script calls apply immediately in order, and only the most recent edit per file is undoable."]
       : []),
   ],
   replace_match: () => [
-    "replace_match: old_string is only the fragment that changes; every match in the range changes, so scope the range to the lines that should change. If old_string covers the line except indentation and trailing punctuation, use replace.",
+    "replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor.",
   ],
   insert: () => ["insert: check the diff for a missing or extra blank row at block edges."],
   copy: () => [
@@ -121,15 +129,17 @@ const PASS_THROUGH = (line: string, name: string) =>
 // TEXT_ENDING_NOTE, which the shared edit rule states once. Without them the model
 // guesses range bounds (off-by-one), adds blank lines at insert edges, or puts a
 // copy anchor in the wrong file. move has the same fields; the copy/move rule says so.
+// outline keeps only `depth`, whose 0 / default 2 / max 10 ladder is not derivable.
 const PARAM_DESC: Record<string, string[]> = {
   replace: ["remove_from", "remove_to", "text"],
   replace_match: ["replace_from", "replace_to"],
   insert: ["text"],
   copy: ["source_from", "source_to", "anchor"],
+  outline: ["depth"],
 };
 
 const CMD_DESC: Record<string, string> = {
-  "hashline-config": "Open hashline settings: read, grep, copy/move, replace_match, path, diff.",
+  "hashline-config": "Open hashline settings: read, grep, copy/move, replace_match, outline, diff.",
   "clear-anchors": "Clear session anchor claims; re-read to reclaim.",
 };
 

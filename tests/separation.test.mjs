@@ -9,11 +9,35 @@ process.env.HOME = mkdtempSync(join(tmpdir(), "pi-hashline-lean2-test-"));
 
 const jiti = createJiti(import.meta.url, { interopDefault: true });
 const hashlineExtension = (await jiti.import("../index.ts")).default;
+const upstreamExtension = (await jiti.import("pi-hashline-edit-pro")).default;
+// Pristine upstream schemas, used to prove that stripping touches descriptions only.
+const upstreamTools = new Map();
+upstreamExtension({
+  registerTool: (tool) => upstreamTools.set(tool.name, tool),
+  registerCommand() {},
+  on() {},
+  getActiveTools: () => [],
+  getAllTools: () => [],
+  setActiveTools() {},
+});
+function stripDescriptions(value) {
+  if (Array.isArray(value)) return value.map(stripDescriptions);
+  if (!value || typeof value !== "object") return value;
+  const out = Object.create(Object.getPrototypeOf(value));
+  for (const key of Reflect.ownKeys(value)) {
+    if (key === "description") continue;
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (descriptor && "value" in descriptor) descriptor.value = stripDescriptions(descriptor.value);
+    Object.defineProperty(out, key, descriptor);
+  }
+  return out;
+}
 const collapsedDisplayService = Symbol.for(
   "@local/pi-collapsed-tools.display-service.v1",
 );
 const expectedTools = [
   "read",
+  "outline",
   "replace",
   "replace_match",
   "insert",
@@ -48,6 +72,7 @@ const KEPT_DESCRIPTIONS = {
   replace_match: ["properties.replace_from", "properties.replace_to"],
   insert: ["properties.text"],
   copy: ["properties.source_from", "properties.source_to", "properties.anchor"],
+  outline: ["properties.depth"],
 };
 
 function descriptionPaths(value, at = []) {
@@ -58,7 +83,7 @@ function descriptionPaths(value, at = []) {
   );
 }
 
-test("registers the upstream 6.4.6 tools with lean model-facing text", () => {
+test("registers the upstream 7.1.1 tools with lean model-facing text", () => {
   const registered = [];
   const commands = [];
   const pi = createPi(registered, commands);
@@ -79,10 +104,14 @@ test("registers the upstream 6.4.6 tools with lean model-facing text", () => {
     assert.deepEqual(descriptionPaths(tool.parameters), KEPT_DESCRIPTIONS[tool.name] ?? []);
     // The newline note is stated once in the shared edit rule, not per field.
     assert.ok(!JSON.stringify(tool.parameters).includes("A trailing line break"));
-    assert.ok(Reflect.ownKeys(tool.parameters).includes("~kind"));
-    assert.ok(Object.values(tool.parameters.properties).every((property) =>
-      Reflect.ownKeys(property).includes("~kind"),
-    ));
+    // Stripping drops `description` keys and nothing else: once both sides lose their
+    // descriptions the schema must match upstream's exactly, so markers such as
+    // `~kind` (and 7.x's raw `~unsafe` enum on `direction`) survive untouched.
+    assert.deepEqual(
+      stripDescriptions(tool.parameters),
+      stripDescriptions(upstreamTools.get(tool.name).parameters),
+      `${tool.name} schema drifted from upstream`,
+    );
   }
 
   // 6.x contract: anchor-only edits (no path) take one exact `text` string.
@@ -172,7 +201,7 @@ test("prepareArguments repairs retired edit field names and a redundant ref, cha
   hashlineExtension(createPi(registered, []));
   const replace = registered.find((tool) => tool.name === "replace");
   const insert = registered.find((tool) => tool.name === "insert");
-  const range = { remove_from: "Uf2a", remove_to: "Uf2a" };
+  const range = { remove_from: "amrac", remove_to: "amrac" };
   // Passes both the schema and upstream's runtime shape check.
   const valid = (tool, assertShape, args) => {
     const prepared = tool.prepareArguments(args);
@@ -187,10 +216,10 @@ test("prepareArguments repairs retired edit field names and a redundant ref, cha
   assert.equal(lines.text, "x\ny");
   assert.equal("replacement_lines" in lines, false);
   // insert `lines` -> text.
-  assert.equal(valid(insert, assertInsertReq, { anchor: "Uf2a", direction: "after", lines: ["a", "b"] }).text, "a\nb");
+  assert.equal(valid(insert, assertInsertReq, { anchor: "amrac", direction: "after", lines: ["a", "b"] }).text, "a\nb");
   // Upstream's own aliases still work, together with ours.
-  const both = valid(replace, assertReq, { replace_from: "Uf2a", replace_to: "Uf2a", replacement_text: "z" });
-  assert.deepEqual([both.remove_from, both.remove_to, both.text], ["Uf2a", "Uf2a", "z"]);
+  const both = valid(replace, assertReq, { replace_from: "amrac", replace_to: "amrac", replacement_text: "z" });
+  assert.deepEqual([both.remove_from, both.remove_to, both.text], ["amrac", "amrac", "z"]);
 
   // ref is dropped only when it spells the same path (separators and a leading ./ aside).
   for (const [path, ref] of [["src/a.ts", "./src/a.ts"], ["C:/proj\\package.json", "C:/proj/package.json"]]) {
@@ -223,7 +252,7 @@ test("prepareArguments repairs retired edit field names and a redundant ref, cha
     assert.equal("remove_from" in prepared, false);
   }
   // remove_to is not defaulted to remove_from.
-  const noTo = replace.prepareArguments({ remove_from: "Uf2a", text: "x" });
+  const noTo = replace.prepareArguments({ remove_from: "amrac", text: "x" });
   assert.equal("remove_to" in noTo, false);
   assert.equal(Value.Check(replace.parameters, noTo), false);
   // insert without anchor stays invalid.
