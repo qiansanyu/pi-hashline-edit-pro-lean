@@ -1,4 +1,4 @@
-// pi-hashline-edit-pro-lean: full pi-hashline-edit-pro@7.1.1 runtime,
+// pi-hashline-edit-pro-lean: full pi-hashline-edit-pro@7.2.0 runtime,
 // with concise provider-facing tool/command text and local collapsed-display support.
 //
 // Design: delegate 100% of the runtime to upstream by calling its default
