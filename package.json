@@ -16,7 +16,10 @@
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "typecheck": "tsc -p tsconfig.json",
-    "check": "npm run typecheck && npm test"
+    "check": "npm run typecheck && npm test",
+    "bench": "node bench/dump-visible-text.mjs",
+    "bench:upstream": "node bench/dump-visible-text.mjs --upstream",
+    "bench:repro": "node bench/repro.mjs"
   },
   "dependencies": {
     "pi-hashline-edit-pro": "7.1.1"

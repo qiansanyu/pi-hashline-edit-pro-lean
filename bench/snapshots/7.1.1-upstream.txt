@@ -1,5 +1,5 @@
 # model-facing text · 7.1.1-upstream · upstream
-# upstream 7.1.1 · lean 6.4.6-lean.3 · node v24.19.0 · win32
+# upstream 7.1.1 · lean 7.1.1-lean.1 · node v24.19.0 · win32
 
 ## default  (9 tools, 14663 B)
 # total: desc 5511 B · snippet 1008 B · guidelines 5227 B · param-desc 2917 B

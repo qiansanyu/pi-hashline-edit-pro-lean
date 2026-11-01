@@ -1,12 +1,12 @@
 {
   "label": "7.1.1-lean.1",
   "target": "lean",
-  "createdAt": "2026-11-01T08:20:13.668Z",
+  "createdAt": "2026-11-01T08:45:20.767Z",
   "environment": {
     "node": "v24.19.0",
     "platform": "win32",
     "upstreamVersion": "7.1.1",
-    "leanVersion": "6.4.6-lean.3"
+    "leanVersion": "7.1.1-lean.1"
   },
   "combos": [
     {

@@ -5,8 +5,11 @@ Both drive the extension through a stub `pi` (the same shape `tests/render.test.
 uses), so they exercise the real registration path.
 
 ```
-node bench/dump-visible-text.mjs <label> [--upstream]   # model-facing text -> bench/snapshots/
-node bench/repro.mjs [--upstream]                       # upstream defect reproductions
+npm run bench            # this wrapper  -> bench/snapshots/<version>.{json,txt}
+npm run bench:upstream   # bare upstream -> bench/snapshots/<version>-upstream.{json,txt}
+npm run bench:repro      # upstream defect reproductions
+
+node bench/dump-visible-text.mjs [label] [--upstream]   # label defaults to the version
 ```
 
 `--upstream` swaps in `pi-hashline-edit-pro` itself instead of this wrapper, which is

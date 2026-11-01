@@ -1,7 +1,7 @@
 # pi-hashline-edit-pro-lean
 
 <!-- token-benchmark:summary:start -->
-> **Token benchmark: Lean 1,282, upstream `pi-hashline-edit-pro@6.4.6` 4,732 — 72.9% fewer.**
+> **Tool text: Lean 854 tokens, upstream `pi-hashline-edit-pro@7.1.1` 3,666 — 76.7% fewer.**
 <!-- token-benchmark:summary:end -->
 > [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
@@ -12,15 +12,24 @@ A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiM
 ## Context footprint
 
 <!-- token-benchmark:benchmark:start -->
-With only this extension enabled, its recurring model-facing initialization contribution is:
+Everything this extension adds to the model's context is tool text: descriptions, one-line snippets, prompt guidelines, and the few field descriptions kept on purpose. Measured across all nine tools in four settings combinations by `bench/dump-visible-text.mjs`, which the repository can reproduce:
 
-| Variant | Tool and prompt contribution | Total |
-| --- | --- | ---: |
-| Lean `pi-hashline-edit-pro-lean@6.4.6-lean.3` | `read` (147) + `grep` (146) + `replace` (254) + `replace_match` (195) + `insert` (131) + `copy` (216) + `move` (99) + `undo_last_change` (94) | **1,282** |
-| Upstream `pi-hashline-edit-pro@6.4.6` | `read` (388) + `grep` (514) + `replace` (644) + `replace_match` (953) + `insert` (524) + `copy` (731) + `move` (707) + `undo_last_change` (271) | **4,732** |
+```bash
+npm run bench            # this wrapper  -> bench/snapshots/<version>.{json,txt}
+npm run bench:upstream   # bare upstream -> bench/snapshots/<version>-upstream.{json,txt}
+```
 
-This saves **3,450 tokens (72.9%)**.
-Measured with Pi 1.2.0 in separate temporary processes with empty working directories and configuration. Built-in tools, skills, context files, session history, user messages, unrelated extensions, runtime UI, and slash commands are excluded; `before_agent_start` additions are included. Tokens are a fixed character-proxy estimate using `ceil(characters / 4)`, not provider tokenizer billing.
+| Settings | Lean `7.1.1-lean.1` | Upstream `@7.1.1` | Lean saves |
+| --- | ---: | ---: | ---: |
+| Default | 3,415 B (854 tok) | 14,663 B (3,666 tok) | 11,248 B, **76.7%** |
+| `replace_match` + copy/move off | 3,235 B (809 tok) | 14,024 B (3,506 tok) | 10,789 B, **76.9%** |
+| Auto-read off | 3,323 B (831 tok) | 14,272 B (3,568 tok) | 10,949 B, **76.7%** |
+| Codemode | 5,034 B (1,259 tok) | 16,476 B (4,119 tok) | 11,442 B, **69.4%** |
+| `6.4.6` default, for reference | 2,889 B (723 tok) | 16,298 B (4,075 tok) | 13,409 B, 82.3% |
+
+The 6.4.6 row explains the shrink: upstream stopped repeating its shared guidelines on every tool, and `outline` is new (2,272 B untrimmed upstream, 351 B here). The eight tools both versions share cost 3,064 B now against 2,889 B then — 175 B spent on facts 7.x added.
+
+Counted: tool `description`, `promptSnippet`, every `promptGuidelines` line, and every JSON-Schema `description`. Not counted: Pi's built-in tool text, context files, session history, skills, and other extensions. Tokens use the same fixed character proxy as earlier releases, `ceil(bytes / 4)`, not provider tokenizer billing. This table replaces the full-system-prompt measurement published for 6.4.6 (Pi 1.2.0), which this repository cannot reproduce; snapshots and the upstream defect reproductions live in [`bench/`](bench/README.md).
 <!-- token-benchmark:benchmark:end -->
 
 ## What it keeps

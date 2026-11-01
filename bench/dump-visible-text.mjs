@@ -13,12 +13,9 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createJiti } from "jiti";
 
-const label = process.argv[2];
 const target = process.argv.includes("--upstream") ? "upstream" : "lean";
-if (!label) {
-  console.error("usage: node bench/dump-visible-text.mjs <label> [--upstream]");
-  process.exit(2);
-}
+// Only a bare word is a label; `npm run bench:upstream` appends `--upstream`.
+const requestedLabel = process.argv.slice(2).find((arg) => !arg.startsWith("--"));
 
 // fileURLToPath, not URL.pathname: the installed clone lives under a non-ASCII home
 // directory, and `.pathname` percent-encodes it into an unopenable path.
@@ -111,6 +108,9 @@ async function renderCombo({ config, codemode }) {
 }
 
 const upstreamPkg = JSON.parse(readFileSync(join(root, "node_modules/pi-hashline-edit-pro/package.json"), "utf8"));
+const leanVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
+// Default label is the version, so `npm run bench` needs no argument.
+const label = requestedLabel ?? `${target === "upstream" ? upstreamPkg.version : leanVersion}${target === "upstream" ? "-upstream" : ""}`;
 const snapshot = {
   label,
   target,

@@ -1,7 +1,7 @@
 # pi-hashline-edit-pro-lean
 
 <!-- token-benchmark:summary:start -->
-> **Token 基准：Lean 1,282，上游 `pi-hashline-edit-pro@6.4.6` 4,732，减少 72.9%。**
+> **工具文本：Lean 854 tokens，上游 `pi-hashline-edit-pro@7.1.1` 3,666，减少 76.7%。**
 <!-- token-benchmark:summary:end -->
 > **完整配置参考：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
@@ -12,15 +12,24 @@
 ## 上下文占用
 
 <!-- token-benchmark:benchmark:start -->
-单独启用本扩展时，模型可见的常驻初始化上下文如下：
+本扩展加进模型上下文的全部内容都是工具文本：描述、一行 snippet、guideline，以及有意保留的少量字段描述。下表是全部九个工具在四种设置组合下的实测，由仓库内可复现的 `bench/dump-visible-text.mjs` 产生：
 
-| 版本 | 工具与 Prompt 构成 | 合计 |
-| --- | --- | ---: |
-| Lean `pi-hashline-edit-pro-lean@6.4.6-lean.3` | `read` (147) + `grep` (146) + `replace` (254) + `replace_match` (195) + `insert` (131) + `copy` (216) + `move` (99) + `undo_last_change` (94) | **1,282** |
-| 上游 `pi-hashline-edit-pro@6.4.6` | `read` (388) + `grep` (514) + `replace` (644) + `replace_match` (953) + `insert` (524) + `copy` (731) + `move` (707) + `undo_last_change` (271) | **4,732** |
+```bash
+npm run bench            # 本包装层 -> bench/snapshots/<version>.{json,txt}
+npm run bench:upstream   # 裸上游   -> bench/snapshots/<version>-upstream.{json,txt}
+```
 
-节省 **3,450 tokens（72.9%）**。
-测量环境为 Pi 1.2.0 的独立临时进程、空白工作目录与空白配置。排除内置工具、Skills、上下文文件、会话历史、用户消息、无关扩展、运行时 UI 与 Slash Commands；计入扩展的 `before_agent_start` 注入。Token 是按 `ceil(字符数 / 4)` 计算的固定字符代理估算，并非模型 tokenizer 实际计费值。
+| 设置 | Lean `7.1.1-lean.1` | 上游 `@7.1.1` | Lean 节省 |
+| --- | ---: | ---: | ---: |
+| 默认 | 3,415 B（854 tok） | 14,663 B（3,666 tok） | 11,248 B，**76.7%** |
+| 关闭 `replace_match` 与 copy/move | 3,235 B（809 tok） | 14,024 B（3,506 tok） | 10,789 B，**76.9%** |
+| 关闭 autoRead | 3,323 B（831 tok） | 14,272 B（3,568 tok） | 10,949 B，**76.7%** |
+| codemode | 5,034 B（1,259 tok） | 16,476 B（4,119 tok） | 11,442 B，**69.4%** |
+| `6.4.6` 默认，作为参照 | 2,889 B（723 tok） | 16,298 B（4,075 tok） | 13,409 B，82.3% |
+
+6.4.6 那一行解释了差距为何变小：上游不再把共享 guideline 重复到每个工具上，同时新增了 `outline`（上游未压缩为 2,272 B，这里是 351 B）。两个版本共有的八个工具现在花 3,064 B，当时是 2,889 B——多出的 175 B 买的是 7.x 新增的事实。
+
+统计范围：工具的 `description`、`promptSnippet`、每一行 `promptGuidelines`，以及每个 JSON-Schema 的 `description`。不统计：Pi 自带工具文本、上下文文件、会话历史、skills 与其他扩展。token 数沿用此前版本的固定字符折算 `ceil(bytes / 4)`，不是厂商 tokenizer 计费。本表取代 6.4.6 时期发布的「完整系统提示」测量（Pi 1.2.0），那套口径本仓库无法复现；快照与上游缺陷复现脚本见 [`bench/`](bench/README.md)。
 <!-- token-benchmark:benchmark:end -->
 
 ## 保留的能力
