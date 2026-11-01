@@ -8,11 +8,16 @@
 //   CRLF file. 7.1.1 passes --crlf (upstream src/grep.ts:320).
 // Case 2 (clipped-line): edit a 3-line range whose interior line changed on disk,
 //   so the range check — not anchor resolution — reports the mismatch. The 300
-//   character boundary line is printed clipped in the E_RANGE_STALE feedback yet
-//   marked served, and the advice says "retry without a read"; retrying with the
-//   fresh anchor and the text it shows truncates the line to 203 characters.
-//   7.1.1 does not serve a clipped row and asks for a read instead (upstream
-//   src/hashline/resolve.ts:447-470, 8d01ce2).
+//   character boundary line is printed clipped (203 characters) either way:
+//   - 6.4.6 marks that row served and says "Retry with the fresh anchors above
+//     without a read"            -> saysRetryWithoutRead=true,  saysCallRead=false
+//   - 7.1.1 says "clipped above and not editable from here; call read()"
+//                               -> saysRetryWithoutRead=false, saysCallRead=true
+//   retryWithShownText stays "accepted" in both: the line was already served in
+//   full by the earlier read, and a re-text is indistinguishable from an intentional
+//   edit, so 7.1.1's guard is the feedback contract, not a hard rejection. The
+//   regression to watch is the feedback keys, not the retry.
+//   (upstream src/hashline/resolve.ts:447-470, 8d01ce2)
 // Case 3 (huge-span): not reachable from the tool surface — it needs a span of
 //   >125k array elements, and the 50KB/2000-line serve cap prevents serving such a
 //   range, so the edit is refused earlier. Fixed structurally upstream in 9353b11.
@@ -51,7 +56,8 @@ await new Promise((resolve) => setTimeout(resolve, 250));
 const signal = ctx.signal;
 const noop = () => {};
 const textOf = (result) => (result?.content ?? []).map((entry) => entry.text ?? "").join("\n");
-const ROW = /^([A-Za-z]{4,5})│(.*)$/;
+// read rows are `anchor│content`; grep rows carry a `N:│ ` prefix.
+const ROW = /^(?:\d+[:|-]│\s*)?([A-Za-z]{4,5})│(.*)$/;
 const rowsOf = (text) =>
   text
     .split("\n")
@@ -78,6 +84,7 @@ async function call(tool, id, args) {
   writeFileSync(join(cwd, "crlf.txt"), "alpha\r\nbeta\r\n");
   const called = await call("grep", "grep-crlf", { pattern: "alpha$", path: "crlf.txt" });
   const text = called.ok ? textOf(called.result) : called.error;
+  if (process.env.REPRO_DEBUG) console.log(`--- crlf-dollar output ---\n${text.slice(0, 600)}`);
   report("crlf-dollar", { ok: called.ok, matchedRows: rowsOf(text).length });
 }
 
@@ -105,25 +112,25 @@ async function call(tool, id, args) {
   const saysRetryWithoutRead = /Retry with the fresh anchors above without a read/.test(feedback);
   const saysCallRead = /clipped above and not editable/.test(feedback);
 
-  let retry = "no-fresh-anchor";
+  let retryWithShownText = "no-fresh-anchor";
   if (process.env.REPRO_DEBUG) console.log(`--- clipped-line feedback ---\n${feedback.slice(0, 800)}`);
-  let lineLengthAfter = -1;
+  let lineLengthAfterRetry = -1;
   if (fresh) {
     const applied = await call("replace", "replace-clipped", {
       remove_from: fresh.anchor,
       remove_to: fresh.anchor,
       text: fresh.content,
     });
-    retry = applied.ok ? "accepted" : "rejected";
+    retryWithShownText = applied.ok ? "accepted" : "rejected";
     const line = readFileSync(file, "utf8").split("\n")[0] ?? "";
-    lineLengthAfter = line.length;
+    lineLengthAfterRetry = line.length;
   }
 
   report("clipped-line", {
     servedLength,
     shownLength: fresh?.content.length ?? 0,
-    retry,
-    lineLengthAfter,
+    retryWithShownText,
+    lineLengthAfterRetry,
     saysRetryWithoutRead,
     saysCallRead,
   });
