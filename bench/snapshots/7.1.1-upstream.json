@@ -1,7 +1,6 @@
 {
   "label": "7.1.1-upstream",
   "target": "upstream",
-  "createdAt": "2026-11-01T08:45:29.773Z",
   "environment": {
     "node": "v24.19.0",
     "platform": "win32",

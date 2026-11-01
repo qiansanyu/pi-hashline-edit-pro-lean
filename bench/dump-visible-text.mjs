@@ -114,7 +114,8 @@ const label = requestedLabel ?? `${target === "upstream" ? upstreamPkg.version :
 const snapshot = {
   label,
   target,
-  createdAt: new Date().toISOString(),
+  // No timestamp: the snapshots are committed, and a run clock would make every
+  // regeneration show up as a diff.
   environment: {
     node: process.version,
     platform: process.platform,
