@@ -1,13 +1,13 @@
 # pi-hashline-edit-pro-lean
 
 <!-- token-benchmark:summary:start -->
-> **工具文本：Lean 854 tokens，上游 `pi-hashline-edit-pro@7.1.1` 3,666，减少 76.7%。**
+> **工具文本：Lean 854 tokens，上游 `pi-hashline-edit-pro@7.2.0` 3,666，减少 76.7%。**
 <!-- token-benchmark:summary:end -->
 > **上游作者的配置参考：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [English](README.md)
 
-[`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro) 的 Token 精简版 Pi 包装层。当前固定使用完整的上游 `7.1.1` 运行时，只精简长期进入模型上下文的工具文本。
+[`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro) 的 Token 精简版 Pi 包装层。当前固定使用完整的上游 `7.2.0` 运行时，只精简长期进入模型上下文的工具文本。
 
 ## 上下文占用
 
@@ -19,7 +19,7 @@ npm run bench            # 本包装层 -> bench/snapshots/<version>.{json,txt}
 npm run bench:upstream   # 裸上游   -> bench/snapshots/<version>-upstream.{json,txt}
 ```
 
-| 设置 | Lean `7.1.1-lean.1` | 上游 `@7.1.1` | Lean 节省 |
+| 设置 | Lean `7.2.0-lean.1` | 上游 `@7.2.0` | Lean 节省 |
 | --- | ---: | ---: | ---: |
 | 默认 | 3,415 B（854 tok） | 14,663 B（3,666 tok） | 11,248 B，**76.7%** |
 | 关闭 `replace_match` 与 copy/move | 3,235 B（809 tok） | 14,024 B（3,506 tok） | 10,789 B，**76.9%** |
@@ -43,7 +43,7 @@ npm run bench:upstream   # 裸上游   -> bench/snapshots/<version>-upstream.{js
 
 ## 为什么更精简
 
-只裁剪模型可见文本，而且每一句都是上游原有说法的精简版：简短描述、一行工具清单摘要，以及上游使用规则的缩写；每条规则只说一次，所以删除参数字段说明，只保留上游对范围首尾、copy 的源与目标（move 字段相同）以及 `text` 的原文说明（其中换行规则挪到共用编辑规则里）；不额外加载 Prompt 资源，也不加任何我们自己的规则。上游已经用报错强制执行、且错误信息写明怎么改的规则（范围内的行没读过、同批范围重叠、锚点失效、path 与锚点不符），交给报错处理，不写进提示。提示里保留上游那些违反后会悄悄改错、或丢掉报错也找不回的东西：`anchor│content` 行格式、转义只解码一次、batch 与单槽撤销、追加与删除的语义。上游只在某些设置下才给的句子（关闭 replace_match 或 copy/move、关闭 autoRead、开启 codemode）随设置增减；上游在每个工具上重复的工具偏好句只在 `read` 上保留一次，codemode 专用说明原样透传。运行行为、默认值、校验、错误契约和工具 Schema 都与上游一致。
+只裁剪模型可见文本，而且每一句都是上游原有说法的精简版：简短描述、一行工具清单摘要，以及上游使用规则的缩写；每条规则只说一次，所以删除参数字段说明，只保留上游对范围首尾、copy 的源与目标（move 字段相同）以及 `text` 的原文说明（其中换行规则挪到共用编辑规则里）；不额外加载 Prompt 资源，也不加任何我们自己的规则。上游已经用报错强制执行、且错误信息写明怎么改的规则（范围内的行没读过、同批范围重叠、锚点失效、path 与锚点不符），交给报错处理，不写进提示。提示里保留上游那些违反后会悄悄改错、或丢掉报错也找不回的东西：`anchor│content` 行格式、转义只解码一次、batch 与单槽撤销、追加与删除的语义。上游只在某些设置下才给的句子（关闭 replace_match 或 copy/move、关闭 autoRead、开启 codemode）随设置增减；上游在每个工具上重复的工具偏好句只在 `read` 上保留一次，codemode 专用说明原样透传。运行行为、默认值、校验、错误契约和工具 Schema 都随所固定的上游运行时，只有一处随分支带进来的改动：`autoReadWrite`（默认 `"full"`）让 `write` 只回报行数而不回读整篇；保持默认时，模型看到的文本与上游今天完全一致。
 
 ## 安装
 
@@ -51,7 +51,7 @@ npm run bench:upstream   # 裸上游   -> bench/snapshots/<version>-upstream.{js
 pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
 ```
 
-`@upstream-7.1.1` 固定到承载本 fork 7.1.1 移植的分支；该分支合并进 `main` 后即可去掉。本 fork 仅自用、未发布到 npm，`kunkun9527` 名下的包仍是原始的 6.4.6 版本。
+`@upstream-7.1.1` 固定到承载本 fork 上游移植及其 `write-echo` 运行时依赖的分支（分支名是历史遗留）；该分支合并进 `main` 后即可去掉。本 fork 仅自用、未发布到 npm，`kunkun9527` 名下的包仍是原始的 6.4.6 版本。
 
 需要 Pi `>=0.99.0`。请勿同时加载其它 Hashline 包装扩展或上游包本身，以免重复注册工具。
 
@@ -98,8 +98,8 @@ undo_last_change   # 仍需要 path
 
 ## 版本
 
-- Lean 包装层：`7.1.1-lean.1`
-- 上游运行时：`pi-hashline-edit-pro@7.1.1`
+- Lean 包装层：`7.2.0-lean.1`
+- 上游运行时：`pi-hashline-edit-pro@7.2.0`（本 fork 的 `write-echo` 分支）
 - Pi：`>=0.99.0`
 - Node.js：`>=22.19.0`
 

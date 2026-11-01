@@ -1,0 +1,253 @@
+# model-facing text · 7.2.0-lean.1 · lean
+# upstream 7.2.0 · lean 7.2.0-lean.1 · node v24.19.0 · win32
+
+## default  (9 tools, 3415 B)
+# total: desc 553 B · snippet 225 B · guidelines 1950 B · param-desc 687 B
+
+### copy  (474 B)
+D  Copy an anchored block verbatim, within or across files.
+S  Copy an anchored block
+G  copy/move: move takes copy's fields. To append to a file, anchor its last line with direction after, not a marker line or the block's own end. Only the source's boundary rows and the destination line need reading.
+P  5-char anchor of the FIRST source line.
+P  5-char anchor of the LAST source line.
+P  5-char anchor of the destination line; the block lands before or after it and it may live in another file.
+
+### grep  (266 B)
+D  Search files with ripgrep; hits are N:│ anchor│content rows (N-│ context), editable without a read.
+S  Search with anchors
+G  grep: set literal: true when the pattern contains regex metacharacters. A match shown as a ... fragment has an anchor covering the whole line.
+
+### insert  (235 B)
+D  Insert new lines before or after an anchor.
+S  Insert lines at an anchor
+G  insert: check the diff for a missing or extra blank row at block edges.
+P  The exact text to insert; an empty string inserts one blank line. Never include the anchor line.
+
+### move  (78 B)
+D  Move an anchored block verbatim, within or across files.
+S  Move an anchored block
+
+### outline  (351 B)
+D  Map the symbols of a file, folder, or glob as anchor rows before reading it.
+S  Map a file's symbols before reading it
+G  outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it.
+P  Nesting depth to show: 0 lists top-level symbols only, 1 adds their members (default 2, maximum 10).
+
+### read  (396 B)
+D  Read a file as anchor│content rows; supports paging and images.
+S  Read files with line anchors
+G  read: after an edit, + and space diff rows carry live anchors, - rows are dead, and rows the diff omits keep theirs; read again only for anchors you lack.
+G  Remember to use the hashline tools for every file read and edit: `read`, `replace`, `replace_match`, `insert`, `copy`, `move`, or `undo_last_change`.
+
+### replace  (870 B)
+D  Replace whole anchored lines. For part of a line, use replace_match.
+S  Replace anchored lines
+G  replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.
+G  edit tools: text is the exact content without anchor prefixes; escapes are decoded once, so \uXXXX is the character and \\uXXXX stays literal. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.
+G  edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all.
+P  5-char anchor of the FIRST line to remove.
+P  5-char anchor of the LAST line to remove.
+P  The exact text to write in place of the removed range. "" deletes the range.
+
+### replace_match  (493 B)
+D  Replace one exact fragment across anchored lines.
+S  Replace fragments in lines
+G  replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor.
+P  5-char anchor of the FIRST line of the range searched.
+P  5-char anchor of the LAST line of the range searched; same as `replace_from` for a single line.
+
+### undo_last_change  (252 B)
+D  Undo a file's latest hashline edit.
+S  Undo a file's last edit
+G  undo_last_change: one slot per file; undo before any other edit or write to that file.
+G  undo_last_change: undo a cross-file move on both files; undoing one side leaves lines duplicated or missing.
+
+## no-replace-match-no-copy-move  (9 tools, 3235 B)
+# total: desc 514 B · snippet 225 B · guidelines 1809 B · param-desc 687 B
+
+### copy  (474 B)
+D  Copy an anchored block verbatim, within or across files.
+S  Copy an anchored block
+G  copy/move: move takes copy's fields. To append to a file, anchor its last line with direction after, not a marker line or the block's own end. Only the source's boundary rows and the destination line need reading.
+P  5-char anchor of the FIRST source line.
+P  5-char anchor of the LAST source line.
+P  5-char anchor of the destination line; the block lands before or after it and it may live in another file.
+
+### grep  (266 B)
+D  Search files with ripgrep; hits are N:│ anchor│content rows (N-│ context), editable without a read.
+S  Search with anchors
+G  grep: set literal: true when the pattern contains regex metacharacters. A match shown as a ... fragment has an anchor covering the whole line.
+
+### insert  (235 B)
+D  Insert new lines before or after an anchor.
+S  Insert lines at an anchor
+G  insert: check the diff for a missing or extra blank row at block edges.
+P  The exact text to insert; an empty string inserts one blank line. Never include the anchor line.
+
+### move  (78 B)
+D  Move an anchored block verbatim, within or across files.
+S  Move an anchored block
+
+### outline  (351 B)
+D  Map the symbols of a file, folder, or glob as anchor rows before reading it.
+S  Map a file's symbols before reading it
+G  outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it.
+P  Nesting depth to show: 0 lists top-level symbols only, 1 adds their members (default 2, maximum 10).
+
+### read  (363 B)
+D  Read a file as anchor│content rows; supports paging and images.
+S  Read files with line anchors
+G  read: after an edit, + and space diff rows carry live anchors, - rows are dead, and rows the diff omits keep theirs; read again only for anchors you lack.
+G  Remember to use the hashline tools for every file read and edit: `read`, `replace`, `insert`, or `undo_last_change`.
+
+### replace  (831 B)
+D  Replace whole anchored lines.
+S  Replace anchored lines
+G  replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.
+G  edit tools: text is the exact content without anchor prefixes; escapes are decoded once, so \uXXXX is the character and \\uXXXX stays literal. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.
+G  edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all.
+P  5-char anchor of the FIRST line to remove.
+P  5-char anchor of the LAST line to remove.
+P  The exact text to write in place of the removed range. "" deletes the range.
+
+### replace_match  (493 B)
+D  Replace one exact fragment across anchored lines.
+S  Replace fragments in lines
+G  replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor.
+P  5-char anchor of the FIRST line of the range searched.
+P  5-char anchor of the LAST line of the range searched; same as `replace_from` for a single line.
+
+### undo_last_change  (144 B)
+D  Undo a file's latest hashline edit.
+S  Undo a file's last edit
+G  undo_last_change: one slot per file; undo before any other edit or write to that file.
+
+## auto-read-off  (9 tools, 3323 B)
+# total: desc 553 B · snippet 225 B · guidelines 1858 B · param-desc 687 B
+
+### copy  (474 B)
+D  Copy an anchored block verbatim, within or across files.
+S  Copy an anchored block
+G  copy/move: move takes copy's fields. To append to a file, anchor its last line with direction after, not a marker line or the block's own end. Only the source's boundary rows and the destination line need reading.
+P  5-char anchor of the FIRST source line.
+P  5-char anchor of the LAST source line.
+P  5-char anchor of the destination line; the block lands before or after it and it may live in another file.
+
+### grep  (266 B)
+D  Search files with ripgrep; hits are N:│ anchor│content rows (N-│ context), editable without a read.
+S  Search with anchors
+G  grep: set literal: true when the pattern contains regex metacharacters. A match shown as a ... fragment has an anchor covering the whole line.
+
+### insert  (235 B)
+D  Insert new lines before or after an anchor.
+S  Insert lines at an anchor
+G  insert: check the diff for a missing or extra blank row at block edges.
+P  The exact text to insert; an empty string inserts one blank line. Never include the anchor line.
+
+### move  (78 B)
+D  Move an anchored block verbatim, within or across files.
+S  Move an anchored block
+
+### outline  (351 B)
+D  Map the symbols of a file, folder, or glob as anchor rows before reading it.
+S  Map a file's symbols before reading it
+G  outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it.
+P  Nesting depth to show: 0 lists top-level symbols only, 1 adds their members (default 2, maximum 10).
+
+### read  (304 B)
+D  Read a file as anchor│content rows; supports paging and images.
+S  Read files with line anchors
+G  read: call again after an edit when you need anchors you lack.
+G  Remember to use the hashline tools for every file read and edit: `read`, `replace`, `replace_match`, `insert`, `copy`, `move`, or `undo_last_change`.
+
+### replace  (870 B)
+D  Replace whole anchored lines. For part of a line, use replace_match.
+S  Replace anchored lines
+G  replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.
+G  edit tools: text is the exact content without anchor prefixes; escapes are decoded once, so \uXXXX is the character and \\uXXXX stays literal. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.
+G  edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all.
+P  5-char anchor of the FIRST line to remove.
+P  5-char anchor of the LAST line to remove.
+P  The exact text to write in place of the removed range. "" deletes the range.
+
+### replace_match  (493 B)
+D  Replace one exact fragment across anchored lines.
+S  Replace fragments in lines
+G  replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor.
+P  5-char anchor of the FIRST line of the range searched.
+P  5-char anchor of the LAST line of the range searched; same as `replace_from` for a single line.
+
+### undo_last_change  (252 B)
+D  Undo a file's latest hashline edit.
+S  Undo a file's last edit
+G  undo_last_change: one slot per file; undo before any other edit or write to that file.
+G  undo_last_change: undo a cross-file move on both files; undoing one side leaves lines duplicated or missing.
+
+## codemode  (9 tools, 5034 B)
+# total: desc 553 B · snippet 225 B · guidelines 3569 B · param-desc 687 B
+
+### copy  (634 B)
+D  Copy an anchored block verbatim, within or across files.
+S  Copy an anchored block
+G  copy/move: move takes copy's fields. To append to a file, anchor its last line with direction after, not a marker line or the block's own end. Only the source's boundary rows and the destination line need reading.
+G  `copy`/`move`: a call from a codemode script commits on its own and never joins a batch; a script cross-file `move` shows both the source and destination diffs.
+P  5-char anchor of the FIRST source line.
+P  5-char anchor of the LAST source line.
+P  5-char anchor of the destination line; the block lands before or after it and it may live in another file.
+
+### grep  (447 B)
+D  Search files with ripgrep; hits are N:│ anchor│content rows (N-│ context), editable without a read.
+S  Search with anchors
+G  grep: set literal: true when the pattern contains regex metacharacters. A match shown as a ... fragment has an anchor covering the whole line.
+G  `grep`: a codemode script receives `{ text, results }`; each `results[].lines[]` entry carries the matching line's `anchor` and `text`, so a result is editable without a fresh read.
+
+### insert  (235 B)
+D  Insert new lines before or after an anchor.
+S  Insert lines at an anchor
+G  insert: check the diff for a missing or extra blank row at block edges.
+P  The exact text to insert; an empty string inserts one blank line. Never include the anchor line.
+
+### move  (78 B)
+D  Move an anchored block verbatim, within or across files.
+S  Move an anchored block
+
+### outline  (604 B)
+D  Map the symbols of a file, folder, or glob as anchor rows before reading it.
+S  Map a file's symbols before reading it
+G  outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it.
+G  `outline`: a codemode script receives the served outline text; pass `anchors: true` to receive `{ text, lines, notices }` with editable anchors; a directory or glob returns `files: [{ path, lines, totalLines, truncated, complete }]` in place of `lines`.
+P  Nesting depth to show: 0 lists top-level symbols only, 1 adds their members (default 2, maximum 10).
+
+### read  (954 B)
+D  Read a file as anchor│content rows; supports paging and images.
+S  Read files with line anchors
+G  read: after an edit, + and space diff rows carry live anchors, - rows are dead, and rows the diff omits keep theirs; read again only for anchors you lack.
+G  Remember to use the hashline tools for every file read and edit: `read`, `replace`, `replace_match`, `insert`, `copy`, `move`, or `undo_last_change`.
+G  `read` in a codemode script resolves to the file's text, like the built-in `read`; pass `anchors: true` to receive `{ text, lines, notices }` with the raw file content and `lines[].anchor` for chained edits. An image read resolves to an image block.
+G  `read`/`replace`/`replace_match`/`insert`/`copy`/`move`/`grep`/`undo_last_change`: when called from a codemode script, failures resolve to `{ ok: false, kind: "error", error: { code, message } }`; branch on `ok` instead of `try`/`catch`. Arguments that fail the tool's schema still throw before the tool runs.
+
+### replace  (1225 B)
+D  Replace whole anchored lines. For part of a line, use replace_match.
+S  Replace anchored lines
+G  replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.
+G  edit tools: text is the exact content without anchor prefixes; escapes are decoded once, so \uXXXX is the character and \\uXXXX stays literal. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.
+G  edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all.
+G  edit tools: codemode script calls apply immediately in order, and only the most recent edit per file is undoable.
+G  `replace`/`replace_match`/`insert`/`copy`/`move`: a codemode script receives `{ ok, kind: "edit", classification, diff, anchors, anchorsOmitted }`; reuse `anchors[].anchor` to chain the next edit, and read again when `anchorsOmitted` is true.
+P  5-char anchor of the FIRST line to remove.
+P  5-char anchor of the LAST line to remove.
+P  The exact text to write in place of the removed range. "" deletes the range.
+
+### replace_match  (493 B)
+D  Replace one exact fragment across anchored lines.
+S  Replace fragments in lines
+G  replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor.
+P  5-char anchor of the FIRST line of the range searched.
+P  5-char anchor of the LAST line of the range searched; same as `replace_from` for a single line.
+
+### undo_last_change  (364 B)
+D  Undo a file's latest hashline edit.
+S  Undo a file's last edit
+G  undo_last_change: one slot per file; undo before any other edit or write to that file.
+G  undo_last_change: undo a cross-file move on both files; undoing one side leaves lines duplicated or missing.
+G  `undo_last_change`: each edit from one codemode script takes the undo slot, so only the most recent is undoable.

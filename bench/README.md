@@ -37,6 +37,11 @@ Baseline (`bench/snapshots/`):
 | autoRead off | 3 323 B | 14 272 B | 10 949 B (77%) |
 | codemode | 5 034 B | 16 476 B | 11 442 B (69%) |
 
+The same table on 7.2.0 is byte-identical apart from the header lines: the only change
+between 7.1.1 and 7.2.0 is upstream's post-write echo budget, which touches a
+`tool_result`, not tool text. `diff bench/snapshots/7.1.1-lean.1.txt bench/snapshots/7.2.0-lean.1.txt`
+shows two changed lines, both the version stamp.
+
 Upstream's bulk on 6.4.6 is `promptGuidelines` (8 926 B of 16 298 B) because the shared
 rules — preference line, batch, path, diff, payload — repeat on every tool. 7.1.1
 deduplicates them (`b56f86d`) and trims descriptions, so upstream drops 1 635 B while

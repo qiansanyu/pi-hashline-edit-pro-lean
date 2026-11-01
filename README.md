@@ -1,13 +1,13 @@
 # pi-hashline-edit-pro-lean
 
 <!-- token-benchmark:summary:start -->
-> **Tool text: Lean 854 tokens, upstream `pi-hashline-edit-pro@7.1.1` 3,666 — 76.7% fewer.**
+> **Tool text: Lean 854 tokens, upstream `pi-hashline-edit-pro@7.2.0` 3,666 — 76.7% fewer.**
 <!-- token-benchmark:summary:end -->
 > [Pi setup reference from the upstream author](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README_zh-CN.md)
 
-A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro). It pins the complete upstream `7.1.1` runtime while shortening persistent provider-facing tool text.
+A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro). It pins the complete upstream `7.2.0` runtime while shortening persistent provider-facing tool text.
 
 ## Context footprint
 
@@ -19,7 +19,7 @@ npm run bench            # this wrapper  -> bench/snapshots/<version>.{json,txt}
 npm run bench:upstream   # bare upstream -> bench/snapshots/<version>-upstream.{json,txt}
 ```
 
-| Settings | Lean `7.1.1-lean.1` | Upstream `@7.1.1` | Lean saves |
+| Settings | Lean `7.2.0-lean.1` | Upstream `@7.2.0` | Lean saves |
 | --- | ---: | ---: | ---: |
 | Default | 3,415 B (854 tok) | 14,663 B (3,666 tok) | 11,248 B, **76.7%** |
 | `replace_match` + copy/move off | 3,235 B (809 tok) | 14,024 B (3,506 tok) | 10,789 B, **76.9%** |
@@ -43,7 +43,7 @@ Counted: tool `description`, `promptSnippet`, every `promptGuidelines` line, and
 
 ## Why it is lean
 
-Only model-facing prose is trimmed, and every line is upstream's own wording condensed: concise descriptions, one-line tool-list snippets, and short versions of upstream's usage rules; each rule is said once, so parameter descriptions are removed except upstream's text for range bounds, copy's source and destination (move takes the same fields), `text` (its newline note moves to the shared edit rule), and `outline`'s `depth`; no prompt resources and no rules of our own are added. Rules that upstream already enforces with an error naming the fix (unread range lines, overlapping batch ranges, stale anchors, path ownership) are left to that error instead of the prompt. The prompt keeps upstream's rules whose violation would silently produce a wrong edit or lose something an error cannot give back: the `anchor│content` row format, escape decoding, batch and single-slot undo, append and deletion semantics. Lines upstream shows only under some settings (replace_match or copy/move off, autoRead off, codemode on) follow those settings; upstream's tool-preference line, which it repeats on every tool, is kept once on `read`, and codemode-only guidelines pass through unchanged. Runtime behavior, defaults, validation, error contracts, and tool schemas are upstream's.
+Only model-facing prose is trimmed, and every line is upstream's own wording condensed: concise descriptions, one-line tool-list snippets, and short versions of upstream's usage rules; each rule is said once, so parameter descriptions are removed except upstream's text for range bounds, copy's source and destination (move takes the same fields), `text` (its newline note moves to the shared edit rule), and `outline`'s `depth`; no prompt resources and no rules of our own are added. Rules that upstream already enforces with an error naming the fix (unread range lines, overlapping batch ranges, stale anchors, path ownership) are left to that error instead of the prompt. The prompt keeps upstream's rules whose violation would silently produce a wrong edit or lose something an error cannot give back: the `anchor│content` row format, escape decoding, batch and single-slot undo, append and deletion semantics. Lines upstream shows only under some settings (replace_match or copy/move off, autoRead off, codemode on) follow those settings; upstream's tool-preference line, which it repeats on every tool, is kept once on `read`, and codemode-only guidelines pass through unchanged. Runtime behavior, defaults, validation, error contracts, and tool schemas are the pinned upstream runtime's, with one change carried in the fork branch: `autoReadWrite` (default `"full"`) lets a `write` report a line count instead of echoing the whole file back, which is the same text upstream shows today when left at the default.
 
 ## Install
 
@@ -51,7 +51,7 @@ Only model-facing prose is trimmed, and every line is upstream's own wording con
 pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
 ```
 
-`@upstream-7.1.1` pins the branch that carries this fork's 7.1.1 port; drop it once that branch is merged into `main`. This fork is maintained for personal use, not published to npm, so `kunkun9527`'s package remains the original 6.4.6 release.
+`@upstream-7.1.1` pins the branch that carries this fork's port and its `write-echo` runtime dependency; the branch name is historical. Drop it once that branch is merged into `main`. This fork is maintained for personal use, not published to npm, so `kunkun9527`'s package remains the original 6.4.6 release.
 
 Requires Pi `>=0.99.0`. Do not load another Hashline wrapper or the upstream package at the same time, or tools may be registered twice.
 
@@ -98,8 +98,8 @@ Start a fresh Pi session after upgrading so the model receives the new schemas a
 
 ## Versions
 
-- Lean wrapper: `7.1.1-lean.1`
-- Upstream runtime: `pi-hashline-edit-pro@7.1.1`
+- Lean wrapper: `7.2.0-lean.1`
+- Upstream runtime: `pi-hashline-edit-pro@7.2.0` (this fork's `write-echo` branch)
 - Pi: `>=0.99.0`
 - Node.js: `>=22.19.0`
 
