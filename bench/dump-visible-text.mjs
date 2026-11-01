@@ -10,6 +10,7 @@
 import { mkdirSync, mkdtempSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { createJiti } from "jiti";
 
 const label = process.argv[2];
@@ -19,7 +20,9 @@ if (!label) {
   process.exit(2);
 }
 
-const root = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
+// fileURLToPath, not URL.pathname: the installed clone lives under a non-ASCII home
+// directory, and `.pathname` percent-encodes it into an unopenable path.
+const root = fileURLToPath(new URL("..", import.meta.url));
 const combos = [
   { id: "default", config: {}, codemode: false },
   { id: "no-replace-match-no-copy-move", config: { replaceMatchEnabled: false, copyMoveEnabled: false }, codemode: false },
