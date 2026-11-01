@@ -1,0 +1,4 @@
+* text=auto eol=lf
+
+# Generated snapshots are compared byte-for-byte; never rewrite their line endings.
+bench/snapshots/** -text
