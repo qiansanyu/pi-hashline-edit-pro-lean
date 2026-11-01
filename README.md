@@ -3,7 +3,7 @@
 <!-- token-benchmark:summary:start -->
 > **Tool text: Lean 854 tokens, upstream `pi-hashline-edit-pro@7.1.1` 3,666 — 76.7% fewer.**
 <!-- token-benchmark:summary:end -->
-> [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
+> [Pi setup reference from the upstream author](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [简体中文](README_zh-CN.md)
 
@@ -48,8 +48,10 @@ Only model-facing prose is trimmed, and every line is upstream's own wording con
 ## Install
 
 ```bash
-pi install git:github.com/kunkun9527/pi-hashline-edit-pro-lean
+pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
 ```
+
+`@upstream-7.1.1` pins the branch that carries this fork's 7.1.1 port; drop it once that branch is merged into `main`. This fork is maintained for personal use, not published to npm, so `kunkun9527`'s package remains the original 6.4.6 release.
 
 Requires Pi `>=0.99.0`. Do not load another Hashline wrapper or the upstream package at the same time, or tools may be registered twice.
 

@@ -3,7 +3,7 @@
 <!-- token-benchmark:summary:start -->
 > **工具文本：Lean 854 tokens，上游 `pi-hashline-edit-pro@7.1.1` 3,666，减少 76.7%。**
 <!-- token-benchmark:summary:end -->
-> **完整配置参考：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
+> **上游作者的配置参考：** [查看 Pi Lean Setup](https://github.com/kunkun9527/my-lean-pi-setup)
 
 [English](README.md)
 
@@ -48,8 +48,10 @@ npm run bench:upstream   # 裸上游   -> bench/snapshots/<version>-upstream.{js
 ## 安装
 
 ```bash
-pi install git:github.com/kunkun9527/pi-hashline-edit-pro-lean
+pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
 ```
+
+`@upstream-7.1.1` 固定到承载本 fork 7.1.1 移植的分支；该分支合并进 `main` 后即可去掉。本 fork 仅自用、未发布到 npm，`kunkun9527` 名下的包仍是原始的 6.4.6 版本。
 
 需要 Pi `>=0.99.0`。请勿同时加载其它 Hashline 包装扩展或上游包本身，以免重复注册工具。
 
