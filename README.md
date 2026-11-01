@@ -5,7 +5,7 @@
 <!-- token-benchmark:summary:end -->
 > [See my full setup for Pi](https://github.com/kunkun9527/my-lean-pi-setup)
 
-[简体中文](https://github.com/kunkun9527/pi-hashline-edit-pro-lean/blob/main/README_zh-CN.md)
+[简体中文](README_zh-CN.md)
 
 A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro). It pins the complete upstream `7.1.1` runtime while shortening persistent provider-facing tool text.
 
