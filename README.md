@@ -51,7 +51,7 @@ Only model-facing prose is trimmed, and every line is upstream's own wording con
 pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
 ```
 
-`@upstream-7.1.1` pins the branch that carries this fork's port and its `write-echo` runtime dependency; the branch name is historical. Drop it once that branch is merged into `main`. This fork is maintained for personal use, not published to npm, so `kunkun9527`'s package remains the original 6.4.6 release.
+`@upstream-7.1.1` pins the branch that carries this fork's port and its `mine` runtime dependency; the branch name is historical. Drop it once that branch is merged into `main`. This fork is maintained for personal use, not published to npm, so `kunkun9527`'s package remains the original 6.4.6 release.
 
 Requires Pi `>=0.99.0`. Do not load another Hashline wrapper or the upstream package at the same time, or tools may be registered twice.
 
@@ -99,7 +99,7 @@ Start a fresh Pi session after upgrading so the model receives the new schemas a
 ## Versions
 
 - Lean wrapper: `7.2.0-lean.1`
-- Upstream runtime: `pi-hashline-edit-pro@7.2.0` (this fork's `write-echo` branch)
+- Upstream runtime: `pi-hashline-edit-pro@7.2.0` (this fork's `mine` branch)
 - Pi: `>=0.99.0`
 - Node.js: `>=22.19.0`
 

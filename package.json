@@ -22,7 +22,7 @@
     "bench:repro": "node bench/repro.mjs"
   },
   "dependencies": {
-    "pi-hashline-edit-pro": "github:qiansanyu/pi-hashline-edit-pro#write-echo"
+    "pi-hashline-edit-pro": "github:qiansanyu/pi-hashline-edit-pro#mine"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": ">=0.99.0",
