@@ -13,7 +13,7 @@ A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiM
 
 A fork of [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/pi-hashline-edit-pro-lean) taken at `6.4.6-lean.3`, ported to upstream `pi-hashline-edit-pro@7.2.0`. Maintained for personal use and installed from git, so it is not published to npm; `kunkun9527`'s package remains the original 6.4.6 release.
 
-Against the wrapper it forked from: `outline` is ported, anchors are the five-character lowercase form 7.x serves, the runtime is pinned to this fork's `mine` branch (which carries one behavioural change, `autoReadWrite`), and the context measurement is now a harness the repository reproduces. What changed, why, and how to sync with upstream: [`FORK.md`](FORK.md).
+Against the wrapper it forked from: `outline` is ported, anchors are the five-character lowercase form 7.x serves, the runtime is pinned to the runtime fork's `mine` branch (which carries one behavioural change, `autoReadWrite`), and the context measurement is now a harness the repository reproduces. What changed, why, and how to sync with upstream: [`FORK.md`](FORK.md).
 
 ## Context footprint
 
@@ -37,10 +37,10 @@ Only model-facing prose is trimmed, and every line is upstream's own wording con
 ## Install
 
 ```bash
-pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
+pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@mine
 ```
 
-`@upstream-7.1.1` pins the branch that carries this fork's port and its `mine` runtime dependency; the branch name is historical. Drop it once that branch is merged into `main`.
+`@mine` pins the branch that carries this fork's commits and depends on the runtime fork's `mine` branch. Drop the pin once that branch is merged into `main`.
 
 Requires Pi `>=0.99.0`. Do not load another Hashline wrapper or the upstream package at the same time, or tools may be registered twice.
 
@@ -88,7 +88,7 @@ Start a fresh Pi session after upgrading so the model receives the new schemas a
 ## Versions
 
 - Lean wrapper: `7.2.0-lean.1`
-- Upstream runtime: `pi-hashline-edit-pro@7.2.0` (this fork's `mine` branch)
+- Upstream runtime: `pi-hashline-edit-pro@7.2.0` (the runtime fork's `mine` branch)
 - Pi: `>=0.99.0`
 - Node.js: `>=22.19.0`
 

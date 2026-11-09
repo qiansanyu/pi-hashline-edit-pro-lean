@@ -13,7 +13,7 @@
 
 fork 自 [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/pi-hashline-edit-pro-lean) 的 `6.4.6-lean.3`，已移植到上游 `pi-hashline-edit-pro@7.2.0`。仅自用、从 git 安装，不发布到 npm，`kunkun9527` 名下的包仍是原始的 6.4.6 版本。
 
-与被 fork 的包装层相比：移植了 `outline`，锚点改为 7.x 提供的五字符小写形式，运行时固定到本 fork 的 `mine` 分支（该分支带一处行为改动 `autoReadWrite`），上下文占用改为仓库内可复现的脚本测量。改了什么、为什么、以及如何与上游同步，见 [`FORK.md`](FORK.md)。
+与被 fork 的包装层相比：移植了 `outline`，锚点改为 7.x 提供的五字符小写形式，运行时固定到运行时 fork 的 `mine` 分支（该分支带一处行为改动 `autoReadWrite`），上下文占用改为仓库内可复现的脚本测量。改了什么、为什么、以及如何与上游同步，见 [`FORK.md`](FORK.md)。
 
 ## 上下文占用
 
@@ -37,10 +37,10 @@ fork 自 [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/
 ## 安装
 
 ```bash
-pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
+pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@mine
 ```
 
-`@upstream-7.1.1` 固定到承载本 fork 上游移植及其 `mine` 运行时依赖的分支（分支名是历史遗留）；该分支合并进 `main` 后即可去掉。
+`@mine` 固定到承载本 fork 提交的分支，其运行时依赖是运行时 fork 的 `mine` 分支；该分支合并进 `main` 后即可去掉。
 
 需要 Pi `>=0.99.0`。请勿同时加载其它 Hashline 包装扩展或上游包本身，以免重复注册工具。
 
@@ -88,7 +88,7 @@ undo_last_change   # 仍需要 path
 ## 版本
 
 - Lean 包装层：`7.2.0-lean.1`
-- 上游运行时：`pi-hashline-edit-pro@7.2.0`（本 fork 的 `mine` 分支）
+- 上游运行时：`pi-hashline-edit-pro@7.2.0`（运行时 fork 的 `mine` 分支）
 - Pi：`>=0.99.0`
 - Node.js：`>=22.19.0`
 

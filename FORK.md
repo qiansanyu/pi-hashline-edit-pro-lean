@@ -9,8 +9,9 @@ fork 自 [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/
 | Ref | 内容 |
 | --- | --- |
 | `main` | 与 fork 时刻完全一致的上游树。没有任何 fork 提交。rebase 目标。 |
-| `upstream-7.1.1` | 全部 fork 提交，线性、无 merge。名字是历史遗留——它承载的是 7.2.0 移植。合并进 `main` 之前，安装命令一直 pin 在这个分支上。 |
-| `mine`（位于 `qiansanyu/pi-hashline-edit-pro` fork 中） | `package.json` 依赖的运行时。承载唯一一处行为改动 `autoReadWrite`。 |
+| `mine` | 全部 fork 提交，线性、无 merge。安装命令 pin 在这里；合并进 `main` 后即可去掉 pin。 |
+| `upstream-7.1.1` | `mine` 的旧名，与它同提交，只为让早先写下的安装命令继续可用；确认无人依赖后删除。 |
+| 运行时 `mine`（`qiansanyu/pi-hashline-edit-pro`） | `package.json` 依赖的运行时。承载唯一一处行为改动 `autoReadWrite`。 |
 
 不发布到 npm：`dependencies` 指向 git ref，所以安装是按 commit 复现，而不是按版本号。
 
@@ -34,7 +35,7 @@ fork 自 [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/
 - `bench/README.md` —— 度量细节：四种设置的表格、上游成本为何下降、每个复现用例证明了什么。`README.md` 只留一句结论和一个链接。
 - 本文件 —— 差异理由 + 同步与发版流程。不面向用户。
 
-不要加 `LOCAL-CHANGES.md` 式的差异日志。它重复 `git log main..upstream-7.1.1`，写完就开始腐坏，而且最糟的是：它会诱导你把 README 留在上游的事实上，于是 README 描述的版本根本不是安装命令取到的版本。
+不要加 `LOCAL-CHANGES.md` 式的差异日志。它重复 `git log main..mine`，写完就开始腐坏，而且最糟的是：它会诱导你把 README 留在上游的事实上，于是 README 描述的版本根本不是安装命令取到的版本。
 
 ## 同步上游
 
@@ -57,8 +58,8 @@ git rebase upstream/main                                                        
 3. 更新 `bench/README.md` 里的表格；重新生成的快照若只差版本戳，就说明工具文本没动
 4. 改 `package.json` 的 `version` 与 `description`，再改两份 README：顶部一行结论、`## Versions` / `## 版本`，差异若变动也一并更新 `## This fork`
 5. 按仓库既有风格提交：conventional 前缀 + 这么做的理由（`deps:`、`docs:`、`bench:`、`test:`、`fix:`、`release:`）
-6. `pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1`，然后新建 Pi 会话——工具文本与 Schema 只在注册时进入模型
+6. `pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@mine`，然后新建 Pi 会话——工具文本与 Schema 只在注册时进入模型
 
 ## 待办
 
-分支名是历史遗留且误导。只有在安装命令还没被分享出去之前，改名才是免费的，因为 pin 会断；等分支合进 `main` 再改。
+分支改名已完成。`upstream-7.1.1` 仍与 `mine` 同提交，是留给旧安装命令的兼容引用；确认没有环境还 pin 在旧名上之后，删掉本地与远端分支即可（`git branch -d upstream-7.1.1`、`git push origin :upstream-7.1.1`）。
