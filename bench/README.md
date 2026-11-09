@@ -17,11 +17,25 @@ what makes the wrapper's cost measurable: same harness, same settings, two targe
 
 ## dump-visible-text
 
-Counts every byte that reaches the model — tool `description`, `promptSnippet`, every
-`promptGuidelines` line, and every JSON-Schema `description` (recursively) — for four
-settings combinations, and writes a diffable `.txt` plus a detailed `.json`.
+Counts every byte of tool text that reaches the model — tool `description`, `promptSnippet`,
+every `promptGuidelines` line, and every JSON-Schema `description`, recursively — for four
+settings combinations, and writes a diffable `.txt` plus a detailed `.json`. Not counted:
+Pi's built-in tool text, context files, session history, skills, and other extensions.
+Tokens are the fixed character proxy `ceil(bytes / 4)`, not provider tokenizer billing.
 
 Baseline (`bench/snapshots/`):
+
+| combo | lean 7.2.0 | upstream 7.2.0 | lean saves |
+|---|---|---|---|
+| default | 3 415 B (854 tok) | 14 663 B (3 666 tok) | 11 248 B (77%) |
+| no replace_match / no copy-move | 3 235 B (809 tok) | 14 024 B (3 506 tok) | 10 789 B (77%) |
+| autoRead off | 3 323 B (831 tok) | 14 272 B (3 568 tok) | 10 949 B (77%) |
+| codemode | 5 034 B (1 259 tok) | 16 476 B (4 119 tok) | 11 442 B (69%) |
+
+The `7.1.1-lean.1` and `7.2.0-lean.1` snapshots are byte-identical apart from the header
+lines: upstream's only change between those versions is the post-write echo budget, which
+touches a `tool_result`, not tool text. Earlier baseline (6.4.6), the one the shrink below
+is measured against:
 
 | combo | lean 6.4.6 | upstream 6.4.6 | lean saves |
 |---|---|---|---|
@@ -30,17 +44,9 @@ Baseline (`bench/snapshots/`):
 | autoRead off | 2 831 B | 15 209 B | 12 378 B (81%) |
 | codemode | 4 666 B | 18 427 B | 13 761 B (75%) |
 
-| combo | lean 7.1.1 | upstream 7.1.1 | lean saves |
-|---|---|---|---|
-| default | 3 415 B | 14 663 B | 11 248 B (77%) |
-| no replace_match / no copy-move | 3 235 B | 14 024 B | 10 789 B (77%) |
-| autoRead off | 3 323 B | 14 272 B | 10 949 B (77%) |
-| codemode | 5 034 B | 16 476 B | 11 442 B (69%) |
-
-The same table on 7.2.0 is byte-identical apart from the header lines: the only change
-between 7.1.1 and 7.2.0 is upstream's post-write echo budget, which touches a
-`tool_result`, not tool text. `diff bench/snapshots/7.1.1-lean.1.txt bench/snapshots/7.2.0-lean.1.txt`
-shows two changed lines, both the version stamp.
+The 6.4.6 row re-measures this harness's surface, tool text only. The 1 282-token figure the
+6.4.6 README published was a full system prompt in an empty session; this repository cannot
+reproduce that, so the two are not comparable and the published number is not carried here.
 
 Upstream's bulk on 6.4.6 is `promptGuidelines` (8 926 B of 16 298 B) because the shared
 rules — preference line, batch, path, diff, payload — repeat on every tool. 7.1.1

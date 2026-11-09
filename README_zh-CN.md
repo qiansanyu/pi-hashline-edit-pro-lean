@@ -9,27 +9,16 @@
 
 [`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro) 的 Token 精简版 Pi 包装层。当前固定使用完整的上游 `7.2.0` 运行时，只精简长期进入模型上下文的工具文本。
 
+## 本 fork 的差异
+
+fork 自 [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/pi-hashline-edit-pro-lean) 的 `6.4.6-lean.3`，已移植到上游 `pi-hashline-edit-pro@7.2.0`。仅自用、从 git 安装，不发布到 npm，`kunkun9527` 名下的包仍是原始的 6.4.6 版本。
+
+与被 fork 的包装层相比：移植了 `outline`，锚点改为 7.x 提供的五字符小写形式，运行时固定到本 fork 的 `mine` 分支（该分支带一处行为改动 `autoReadWrite`），上下文占用改为仓库内可复现的脚本测量。改了什么、为什么、以及如何与上游同步，见 [`FORK.md`](FORK.md)。
+
 ## 上下文占用
 
 <!-- token-benchmark:benchmark:start -->
-本扩展加进模型上下文的全部内容都是工具文本：描述、一行 snippet、guideline，以及有意保留的少量字段描述。下表是全部九个工具在四种设置组合下的实测，由仓库内可复现的 `bench/dump-visible-text.mjs` 产生：
-
-```bash
-npm run bench            # 本包装层 -> bench/snapshots/<version>.{json,txt}
-npm run bench:upstream   # 裸上游   -> bench/snapshots/<version>-upstream.{json,txt}
-```
-
-| 设置 | Lean `7.2.0-lean.1` | 上游 `@7.2.0` | Lean 节省 |
-| --- | ---: | ---: | ---: |
-| 默认 | 3,415 B（854 tok） | 14,663 B（3,666 tok） | 11,248 B，**76.7%** |
-| 关闭 `replace_match` 与 copy/move | 3,235 B（809 tok） | 14,024 B（3,506 tok） | 10,789 B，**76.9%** |
-| 关闭 autoRead | 3,323 B（831 tok） | 14,272 B（3,568 tok） | 10,949 B，**76.7%** |
-| codemode | 5,034 B（1,259 tok） | 16,476 B（4,119 tok） | 11,442 B，**69.4%** |
-| `6.4.6` 默认，作为参照 | 2,889 B（723 tok） | 16,298 B（4,075 tok） | 13,409 B，82.3% |
-
-6.4.6 那一行解释了差距为何变小：上游不再把共享 guideline 重复到每个工具上，同时新增了 `outline`（上游未压缩为 2,272 B，这里是 351 B）。两个版本共有的八个工具现在花 3,064 B，当时是 2,889 B——多出的 175 B 买的是 7.x 新增的事实。
-
-统计范围：工具的 `description`、`promptSnippet`、每一行 `promptGuidelines`，以及每个 JSON-Schema 的 `description`。不统计：Pi 自带工具文本、上下文文件、会话历史、skills 与其他扩展。token 数沿用此前版本的固定字符折算 `ceil(bytes / 4)`，不是厂商 tokenizer 计费。本表取代 6.4.6 时期发布的「完整系统提示」测量（Pi 1.2.0），那套口径本仓库无法复现；快照与上游缺陷复现脚本见 [`bench/`](bench/README.md)。
+854 tokens，同一设置下上游为 3,666，**减少 76.7%**。本扩展加进模型上下文的全部内容都是工具文本，全部由 `bench/dump-visible-text.mjs` 实测；四种设置的完整表格、快照与复现脚本见 [`bench/`](bench/README.md)。
 <!-- token-benchmark:benchmark:end -->
 
 ## 保留的能力
@@ -51,7 +40,7 @@ npm run bench:upstream   # 裸上游   -> bench/snapshots/<version>-upstream.{js
 pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
 ```
 
-`@upstream-7.1.1` 固定到承载本 fork 上游移植及其 `mine` 运行时依赖的分支（分支名是历史遗留）；该分支合并进 `main` 后即可去掉。本 fork 仅自用、未发布到 npm，`kunkun9527` 名下的包仍是原始的 6.4.6 版本。
+`@upstream-7.1.1` 固定到承载本 fork 上游移植及其 `mine` 运行时依赖的分支（分支名是历史遗留）；该分支合并进 `main` 后即可去掉。
 
 需要 Pi `>=0.99.0`。请勿同时加载其它 Hashline 包装扩展或上游包本身，以免重复注册工具。
 

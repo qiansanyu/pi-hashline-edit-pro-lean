@@ -9,27 +9,16 @@
 
 A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiMob/pi-hashline-edit-pro). It pins the complete upstream `7.2.0` runtime while shortening persistent provider-facing tool text.
 
+## This fork
+
+A fork of [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/pi-hashline-edit-pro-lean) taken at `6.4.6-lean.3`, ported to upstream `pi-hashline-edit-pro@7.2.0`. Maintained for personal use and installed from git, so it is not published to npm; `kunkun9527`'s package remains the original 6.4.6 release.
+
+Against the wrapper it forked from: `outline` is ported, anchors are the five-character lowercase form 7.x serves, the runtime is pinned to this fork's `mine` branch (which carries one behavioural change, `autoReadWrite`), and the context measurement is now a harness the repository reproduces. What changed, why, and how to sync with upstream: [`FORK.md`](FORK.md).
+
 ## Context footprint
 
 <!-- token-benchmark:benchmark:start -->
-Everything this extension adds to the model's context is tool text: descriptions, one-line snippets, prompt guidelines, and the few field descriptions kept on purpose. Measured across all nine tools in four settings combinations by `bench/dump-visible-text.mjs`, which the repository can reproduce:
-
-```bash
-npm run bench            # this wrapper  -> bench/snapshots/<version>.{json,txt}
-npm run bench:upstream   # bare upstream -> bench/snapshots/<version>-upstream.{json,txt}
-```
-
-| Settings | Lean `7.2.0-lean.1` | Upstream `@7.2.0` | Lean saves |
-| --- | ---: | ---: | ---: |
-| Default | 3,415 B (854 tok) | 14,663 B (3,666 tok) | 11,248 B, **76.7%** |
-| `replace_match` + copy/move off | 3,235 B (809 tok) | 14,024 B (3,506 tok) | 10,789 B, **76.9%** |
-| Auto-read off | 3,323 B (831 tok) | 14,272 B (3,568 tok) | 10,949 B, **76.7%** |
-| Codemode | 5,034 B (1,259 tok) | 16,476 B (4,119 tok) | 11,442 B, **69.4%** |
-| `6.4.6` default, for reference | 2,889 B (723 tok) | 16,298 B (4,075 tok) | 13,409 B, 82.3% |
-
-The 6.4.6 row explains the shrink: upstream stopped repeating its shared guidelines on every tool, and `outline` is new (2,272 B untrimmed upstream, 351 B here). The eight tools both versions share cost 3,064 B now against 2,889 B then — 175 B spent on facts 7.x added.
-
-Counted: tool `description`, `promptSnippet`, every `promptGuidelines` line, and every JSON-Schema `description`. Not counted: Pi's built-in tool text, context files, session history, skills, and other extensions. Tokens use the same fixed character proxy as earlier releases, `ceil(bytes / 4)`, not provider tokenizer billing. This table replaces the full-system-prompt measurement published for 6.4.6 (Pi 1.2.0), which this repository cannot reproduce; snapshots and the upstream defect reproductions live in [`bench/`](bench/README.md).
+854 tokens against upstream's 3,666 at the same settings — **76.7% fewer**. Everything this extension adds to the model's context is tool text, and all of it is measured by `bench/dump-visible-text.mjs`; the four-settings table, the snapshots, and the reproduction scripts live in [`bench/`](bench/README.md).
 <!-- token-benchmark:benchmark:end -->
 
 ## What it keeps
@@ -51,7 +40,7 @@ Only model-facing prose is trimmed, and every line is upstream's own wording con
 pi install git:github.com/qiansanyu/pi-hashline-edit-pro-lean@upstream-7.1.1
 ```
 
-`@upstream-7.1.1` pins the branch that carries this fork's port and its `mine` runtime dependency; the branch name is historical. Drop it once that branch is merged into `main`. This fork is maintained for personal use, not published to npm, so `kunkun9527`'s package remains the original 6.4.6 release.
+`@upstream-7.1.1` pins the branch that carries this fork's port and its `mine` runtime dependency; the branch name is historical. Drop it once that branch is merged into `main`.
 
 Requires Pi `>=0.99.0`. Do not load another Hashline wrapper or the upstream package at the same time, or tools may be registered twice.
 
