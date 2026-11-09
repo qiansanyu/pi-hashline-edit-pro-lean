@@ -41,7 +41,7 @@ test("default: all eight tools, shared rules once, labels for copy/move", async 
   assert.ok(tools.get("replace").description.includes("replace_match"));
   assert.ok(lines("read").some((line) => line.includes("post-edit diff") || line.includes("+ and space diff rows")));
   assert.ok(lines("replace").some((line) => line.includes("one undo reverts all")));
-  assert.ok(lines("replace").some((line) => line.includes("decoded once")));
+  assert.ok(lines("replace").some((line) => line.includes("never decodes an escape")));
   assert.ok(lines("copy").some((line) => line.startsWith("copy/move:")));
   assert.ok(lines("undo_last_change").some((line) => line.includes("cross-file move")));
   assert.ok(all.some((line) => line.startsWith("Remember to use the hashline tools")));

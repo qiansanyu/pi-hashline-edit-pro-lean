@@ -96,7 +96,7 @@ const GUIDE: Record<string, (up: string[]) => string[]> = {
   ],
   replace: (up) => [
     "replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.",
-    `edit tools: text is the exact content without anchor prefixes; escapes are decoded once, so \\uXXXX is the character and \\\\uXXXX stays literal. ${TEXT_ENDING_NOTE}`,
+    `edit tools: the payload is written exactly as received, without anchor prefixes, and the tool never decodes an escape — a real line break is a line break. [H_LITERAL_ESCAPE] counts the literal characters that landed; go by that count, not by a backslash-doubling rule. ${TEXT_ENDING_NOTE}`,
     "edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all.",
     ...(has(up, "Script calls apply immediately")
       ? ["edit tools: codemode script calls apply immediately in order, and only the most recent edit per file is undoable."]
