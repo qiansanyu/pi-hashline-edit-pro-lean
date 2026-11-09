@@ -1,7 +1,7 @@
 # pi-hashline-edit-pro-lean
 
 <!-- token-benchmark:summary:start -->
-> **Tool text: Lean 854 tokens, upstream `pi-hashline-edit-pro@7.2.0` 3,666 — 76.7% fewer.**
+> **Tool text: Lean 886 tokens, upstream `pi-hashline-edit-pro@7.2.0` 3,680 — 76.0% fewer.**
 <!-- token-benchmark:summary:end -->
 > [Pi setup reference from the upstream author](https://github.com/kunkun9527/my-lean-pi-setup)
 
@@ -13,12 +13,12 @@ A token-lean Pi wrapper around [`pi-hashline-edit-pro`](https://github.com/YuGiM
 
 A fork of [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/pi-hashline-edit-pro-lean) taken at `6.4.6-lean.3`, ported to upstream `pi-hashline-edit-pro@7.2.0`. Maintained for personal use and installed from git, so it is not published to npm; `kunkun9527`'s package remains the original 6.4.6 release.
 
-Against the wrapper it forked from: `outline` is ported, anchors are the five-character lowercase form 7.x serves, the runtime is pinned to the runtime fork's `mine` branch (which carries one behavioural change, `autoReadWrite`), and the context measurement is now a harness the repository reproduces. What changed, why, and how to sync with upstream: [`FORK.md`](FORK.md).
+Against the wrapper it forked from: `outline` is ported, anchors are the five-character lowercase form 7.x serves, the runtime is pinned to the runtime fork's `mine` branch (which carries the `autoReadWrite` behavioural change and the `[H_LITERAL_ESCAPE]` wording the escape rule points at), and the context measurement is now a harness the repository reproduces. What changed, why, and how to sync with upstream: [`FORK.md`](FORK.md).
 
 ## Context footprint
 
 <!-- token-benchmark:benchmark:start -->
-854 tokens against upstream's 3,666 at the same settings — **76.7% fewer**. Everything this extension adds to the model's context is tool text, and all of it is measured by `bench/dump-visible-text.mjs`; the four-settings table, the snapshots, and the reproduction scripts live in [`bench/`](bench/README.md).
+886 tokens against upstream's 3,680 at the same settings — **76.0% fewer**. Everything this extension adds to the model's context is tool text, and all of it is measured by `bench/dump-visible-text.mjs`; the four-settings table, the snapshots, and the reproduction scripts live in [`bench/`](bench/README.md).
 <!-- token-benchmark:benchmark:end -->
 
 ## What it keeps
@@ -32,7 +32,7 @@ Against the wrapper it forked from: `outline` is ported, anchors are the five-ch
 
 ## Why it is lean
 
-Only model-facing prose is trimmed, and every line is upstream's own wording condensed: concise descriptions, one-line tool-list snippets, and short versions of upstream's usage rules; each rule is said once, so parameter descriptions are removed except upstream's text for range bounds, copy's source and destination (move takes the same fields), `text` (its newline note moves to the shared edit rule), and `outline`'s `depth`; no prompt resources and no rules of our own are added. Rules that upstream already enforces with an error naming the fix (unread range lines, overlapping batch ranges, stale anchors, path ownership) are left to that error instead of the prompt. The prompt keeps upstream's rules whose violation would silently produce a wrong edit or lose something an error cannot give back: the `anchor│content` row format, escape decoding, batch and single-slot undo, append and deletion semantics. Lines upstream shows only under some settings (replace_match or copy/move off, autoRead off, codemode on) follow those settings; upstream's tool-preference line, which it repeats on every tool, is kept once on `read`, and codemode-only guidelines pass through unchanged. Runtime behavior, defaults, validation, error contracts, and tool schemas are the pinned upstream runtime's, with one change carried in the fork branch: `autoReadWrite` (default `"full"`) lets a `write` report a line count instead of echoing the whole file back, which is the same text upstream shows today when left at the default.
+Only model-facing prose is trimmed, and every line is upstream's own wording condensed: concise descriptions, one-line tool-list snippets, and short versions of upstream's usage rules; each rule is said once, so parameter descriptions are removed except upstream's text for range bounds, copy's source and destination (move takes the same fields), `text` (its newline note moves to the shared edit rule), and `outline`'s `depth`; no prompt resources and no rules of our own are added. Rules that upstream already enforces with an error naming the fix (unread range lines, overlapping batch ranges, stale anchors, path ownership) are left to that error instead of the prompt. The prompt keeps upstream's rules whose violation would silently produce a wrong edit or lose something an error cannot give back: the `anchor│content` row format, the escape rule (it defers to the `[H_LITERAL_ESCAPE]` character count instead of restating which layer decodes what, see [`FORK.md`](FORK.md)), batch and single-slot undo, append and deletion semantics. Lines upstream shows only under some settings (replace_match or copy/move off, autoRead off, codemode on) follow those settings; upstream's tool-preference line, which it repeats on every tool, is kept once on `read`, and codemode-only guidelines pass through unchanged. Runtime behavior, defaults, validation, error contracts, and tool schemas are the pinned upstream runtime's, with the changes carried in the fork branch: `autoReadWrite` (default `"full"`) lets a `write` report a line count instead of echoing the whole file back, which is the same text upstream shows today when left at the default, and `[H_LITERAL_ESCAPE]` counts the literal characters it wrote.
 
 ## Install
 
@@ -87,7 +87,7 @@ Start a fresh Pi session after upgrading so the model receives the new schemas a
 
 ## Versions
 
-- Lean wrapper: `7.2.0-lean.1`
+- Lean wrapper: `7.2.0-lean.2`
 - Upstream runtime: `pi-hashline-edit-pro@7.2.0` (the runtime fork's `mine` branch)
 - Pi: `>=0.99.0`
 - Node.js: `>=22.19.0`

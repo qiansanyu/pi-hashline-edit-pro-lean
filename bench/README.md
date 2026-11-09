@@ -25,12 +25,14 @@ Tokens are the fixed character proxy `ceil(bytes / 4)`, not provider tokenizer b
 
 Baseline (`bench/snapshots/`):
 
-| combo | lean 7.2.0 | upstream 7.2.0 | lean saves |
+| combo | lean 7.2.0-lean.2 | upstream 7.2.0 | lean saves |
 |---|---|---|---|
-| default | 3 415 B (854 tok) | 14 663 B (3 666 tok) | 11 248 B (77%) |
-| no replace_match / no copy-move | 3 235 B (809 tok) | 14 024 B (3 506 tok) | 10 789 B (77%) |
-| autoRead off | 3 323 B (831 tok) | 14 272 B (3 568 tok) | 10 949 B (77%) |
-| codemode | 5 034 B (1 259 tok) | 16 476 B (4 119 tok) | 11 442 B (69%) |
+| default | 3 543 B (886 tok) | 14 720 B (3 680 tok) | 11 177 B (76%) |
+| no replace_match / no copy-move | 3 363 B (841 tok) | 14 081 B (3 521 tok) | 10 718 B (76%) |
+| autoRead off | 3 451 B (863 tok) | 14 329 B (3 583 tok) | 10 878 B (76%) |
+| codemode | 5 162 B (1 291 tok) | 16 533 B (4 134 tok) | 11 371 B (69%) |
+
+`7.2.0-lean.2` differs from `7.2.0-lean.1` by one line: the escape rule now defers to the `[H_LITERAL_ESCAPE]` character count instead of restating the decoding layer, which is +128 B in the default combo. The upstream column moved for the same reason on the runtime side (14 663 B → 14 720 B), so the saving reads 76.0% rather than 76.7%; measured against pristine 7.2.0 text it would be 75.8%. The `7.2.0-upstream` snapshot is therefore the pinned runtime's text, not pristine upstream — the two differ by that one hint-wording line.
 
 The `7.1.1-lean.1` and `7.2.0-lean.1` snapshots are byte-identical apart from the header
 lines: upstream's only change between those versions is the post-write echo budget, which
@@ -56,7 +58,7 @@ therefore falls from 82% to 65% *before* the wrapper itself is ported — that i
 number the port has to improve on, and the `outline` line is the largest single item
 left unported.
 
-Ported figures: 3 415 B for nine tools. `outline` contributes 351 B, so the eight tools
+Ported figures (`7.2.0-lean.1`): 3 415 B for nine tools. `outline` contributes 351 B, so the eight tools
 7.1.1 shares with 6.4.6 cost 3 064 B against 2 889 B — 175 B more, spent on the facts 7.x
 added (send the edits you already have anchors for in one batch, rows the diff omits keep
 their anchors, `match`/replacement semantics, and `outline`'s depth ladder).

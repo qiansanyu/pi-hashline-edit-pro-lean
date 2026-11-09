@@ -1,0 +1,675 @@
+{
+  "label": "7.2.0-lean.2",
+  "target": "lean",
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "upstreamVersion": "7.2.0",
+    "leanVersion": "7.2.0-lean.2"
+  },
+  "combos": [
+    {
+      "id": "default",
+      "tools": [
+        {
+          "name": "copy",
+          "description": "Copy an anchored block verbatim, within or across files.",
+          "snippet": "Copy an anchored block",
+          "guidelines": [
+            "copy/move: move takes copy's fields. To append to a file, anchor its last line with direction after, not a marker line or the block's own end. Only the source's boundary rows and the destination line need reading."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST source line.",
+            "5-char anchor of the LAST source line.",
+            "5-char anchor of the destination line; the block lands before or after it and it may live in another file."
+          ],
+          "bytes": {
+            "description": 56,
+            "snippet": 22,
+            "guidelines": 213,
+            "paramDescriptions": 183
+          }
+        },
+        {
+          "name": "grep",
+          "description": "Search files with ripgrep; hits are N:│ anchor│content rows (N-│ context), editable without a read.",
+          "snippet": "Search with anchors",
+          "guidelines": [
+            "grep: set literal: true when the pattern contains regex metacharacters. A match shown as a ... fragment has an anchor covering the whole line."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 105,
+            "snippet": 19,
+            "guidelines": 142,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "insert",
+          "description": "Insert new lines before or after an anchor.",
+          "snippet": "Insert lines at an anchor",
+          "guidelines": [
+            "insert: check the diff for a missing or extra blank row at block edges."
+          ],
+          "paramDescriptions": [
+            "The exact text to insert; an empty string inserts one blank line. Never include the anchor line."
+          ],
+          "bytes": {
+            "description": 43,
+            "snippet": 25,
+            "guidelines": 71,
+            "paramDescriptions": 96
+          }
+        },
+        {
+          "name": "move",
+          "description": "Move an anchored block verbatim, within or across files.",
+          "snippet": "Move an anchored block",
+          "guidelines": [],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 56,
+            "snippet": 22,
+            "guidelines": 0,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "outline",
+          "description": "Map the symbols of a file, folder, or glob as anchor rows before reading it.",
+          "snippet": "Map a file's symbols before reading it",
+          "guidelines": [
+            "outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it."
+          ],
+          "paramDescriptions": [
+            "Nesting depth to show: 0 lists top-level symbols only, 1 adds their members (default 2, maximum 10)."
+          ],
+          "bytes": {
+            "description": 76,
+            "snippet": 38,
+            "guidelines": 137,
+            "paramDescriptions": 100
+          }
+        },
+        {
+          "name": "read",
+          "description": "Read a file as anchor│content rows; supports paging and images.",
+          "snippet": "Read files with line anchors",
+          "guidelines": [
+            "read: after an edit, + and space diff rows carry live anchors, - rows are dead, and rows the diff omits keep theirs; read again only for anchors you lack.",
+            "Remember to use the hashline tools for every file read and edit: `read`, `replace`, `replace_match`, `insert`, `copy`, `move`, or `undo_last_change`."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 65,
+            "snippet": 28,
+            "guidelines": 303,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "replace",
+          "description": "Replace whole anchored lines. For part of a line, use replace_match.",
+          "snippet": "Replace anchored lines",
+          "guidelines": [
+            "replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.",
+            "edit tools: the payload is written exactly as received, without anchor prefixes, and the tool never decodes an escape — a real line break is a line break. [H_LITERAL_ESCAPE] counts the literal characters that landed; go by that count, not by a backslash-doubling rule. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.",
+            "edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST line to remove.",
+            "5-char anchor of the LAST line to remove.",
+            "The exact text to write in place of the removed range. \"\" deletes the range."
+          ],
+          "bytes": {
+            "description": 68,
+            "snippet": 22,
+            "guidelines": 749,
+            "paramDescriptions": 159
+          }
+        },
+        {
+          "name": "replace_match",
+          "description": "Replace one exact fragment across anchored lines.",
+          "snippet": "Replace fragments in lines",
+          "guidelines": [
+            "replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST line of the range searched.",
+            "5-char anchor of the LAST line of the range searched; same as `replace_from` for a single line."
+          ],
+          "bytes": {
+            "description": 49,
+            "snippet": 26,
+            "guidelines": 269,
+            "paramDescriptions": 149
+          }
+        },
+        {
+          "name": "undo_last_change",
+          "description": "Undo a file's latest hashline edit.",
+          "snippet": "Undo a file's last edit",
+          "guidelines": [
+            "undo_last_change: one slot per file; undo before any other edit or write to that file.",
+            "undo_last_change: undo a cross-file move on both files; undoing one side leaves lines duplicated or missing."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 35,
+            "snippet": 23,
+            "guidelines": 194,
+            "paramDescriptions": 0
+          }
+        }
+      ],
+      "total": {
+        "description": 553,
+        "snippet": 225,
+        "guidelines": 2078,
+        "paramDescriptions": 687,
+        "all": 3543
+      }
+    },
+    {
+      "id": "no-replace-match-no-copy-move",
+      "tools": [
+        {
+          "name": "copy",
+          "description": "Copy an anchored block verbatim, within or across files.",
+          "snippet": "Copy an anchored block",
+          "guidelines": [
+            "copy/move: move takes copy's fields. To append to a file, anchor its last line with direction after, not a marker line or the block's own end. Only the source's boundary rows and the destination line need reading."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST source line.",
+            "5-char anchor of the LAST source line.",
+            "5-char anchor of the destination line; the block lands before or after it and it may live in another file."
+          ],
+          "bytes": {
+            "description": 56,
+            "snippet": 22,
+            "guidelines": 213,
+            "paramDescriptions": 183
+          }
+        },
+        {
+          "name": "grep",
+          "description": "Search files with ripgrep; hits are N:│ anchor│content rows (N-│ context), editable without a read.",
+          "snippet": "Search with anchors",
+          "guidelines": [
+            "grep: set literal: true when the pattern contains regex metacharacters. A match shown as a ... fragment has an anchor covering the whole line."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 105,
+            "snippet": 19,
+            "guidelines": 142,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "insert",
+          "description": "Insert new lines before or after an anchor.",
+          "snippet": "Insert lines at an anchor",
+          "guidelines": [
+            "insert: check the diff for a missing or extra blank row at block edges."
+          ],
+          "paramDescriptions": [
+            "The exact text to insert; an empty string inserts one blank line. Never include the anchor line."
+          ],
+          "bytes": {
+            "description": 43,
+            "snippet": 25,
+            "guidelines": 71,
+            "paramDescriptions": 96
+          }
+        },
+        {
+          "name": "move",
+          "description": "Move an anchored block verbatim, within or across files.",
+          "snippet": "Move an anchored block",
+          "guidelines": [],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 56,
+            "snippet": 22,
+            "guidelines": 0,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "outline",
+          "description": "Map the symbols of a file, folder, or glob as anchor rows before reading it.",
+          "snippet": "Map a file's symbols before reading it",
+          "guidelines": [
+            "outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it."
+          ],
+          "paramDescriptions": [
+            "Nesting depth to show: 0 lists top-level symbols only, 1 adds their members (default 2, maximum 10)."
+          ],
+          "bytes": {
+            "description": 76,
+            "snippet": 38,
+            "guidelines": 137,
+            "paramDescriptions": 100
+          }
+        },
+        {
+          "name": "read",
+          "description": "Read a file as anchor│content rows; supports paging and images.",
+          "snippet": "Read files with line anchors",
+          "guidelines": [
+            "read: after an edit, + and space diff rows carry live anchors, - rows are dead, and rows the diff omits keep theirs; read again only for anchors you lack.",
+            "Remember to use the hashline tools for every file read and edit: `read`, `replace`, `insert`, or `undo_last_change`."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 65,
+            "snippet": 28,
+            "guidelines": 270,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "replace",
+          "description": "Replace whole anchored lines.",
+          "snippet": "Replace anchored lines",
+          "guidelines": [
+            "replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.",
+            "edit tools: the payload is written exactly as received, without anchor prefixes, and the tool never decodes an escape — a real line break is a line break. [H_LITERAL_ESCAPE] counts the literal characters that landed; go by that count, not by a backslash-doubling rule. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.",
+            "edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST line to remove.",
+            "5-char anchor of the LAST line to remove.",
+            "The exact text to write in place of the removed range. \"\" deletes the range."
+          ],
+          "bytes": {
+            "description": 29,
+            "snippet": 22,
+            "guidelines": 749,
+            "paramDescriptions": 159
+          }
+        },
+        {
+          "name": "replace_match",
+          "description": "Replace one exact fragment across anchored lines.",
+          "snippet": "Replace fragments in lines",
+          "guidelines": [
+            "replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST line of the range searched.",
+            "5-char anchor of the LAST line of the range searched; same as `replace_from` for a single line."
+          ],
+          "bytes": {
+            "description": 49,
+            "snippet": 26,
+            "guidelines": 269,
+            "paramDescriptions": 149
+          }
+        },
+        {
+          "name": "undo_last_change",
+          "description": "Undo a file's latest hashline edit.",
+          "snippet": "Undo a file's last edit",
+          "guidelines": [
+            "undo_last_change: one slot per file; undo before any other edit or write to that file."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 35,
+            "snippet": 23,
+            "guidelines": 86,
+            "paramDescriptions": 0
+          }
+        }
+      ],
+      "total": {
+        "description": 514,
+        "snippet": 225,
+        "guidelines": 1937,
+        "paramDescriptions": 687,
+        "all": 3363
+      }
+    },
+    {
+      "id": "auto-read-off",
+      "tools": [
+        {
+          "name": "copy",
+          "description": "Copy an anchored block verbatim, within or across files.",
+          "snippet": "Copy an anchored block",
+          "guidelines": [
+            "copy/move: move takes copy's fields. To append to a file, anchor its last line with direction after, not a marker line or the block's own end. Only the source's boundary rows and the destination line need reading."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST source line.",
+            "5-char anchor of the LAST source line.",
+            "5-char anchor of the destination line; the block lands before or after it and it may live in another file."
+          ],
+          "bytes": {
+            "description": 56,
+            "snippet": 22,
+            "guidelines": 213,
+            "paramDescriptions": 183
+          }
+        },
+        {
+          "name": "grep",
+          "description": "Search files with ripgrep; hits are N:│ anchor│content rows (N-│ context), editable without a read.",
+          "snippet": "Search with anchors",
+          "guidelines": [
+            "grep: set literal: true when the pattern contains regex metacharacters. A match shown as a ... fragment has an anchor covering the whole line."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 105,
+            "snippet": 19,
+            "guidelines": 142,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "insert",
+          "description": "Insert new lines before or after an anchor.",
+          "snippet": "Insert lines at an anchor",
+          "guidelines": [
+            "insert: check the diff for a missing or extra blank row at block edges."
+          ],
+          "paramDescriptions": [
+            "The exact text to insert; an empty string inserts one blank line. Never include the anchor line."
+          ],
+          "bytes": {
+            "description": 43,
+            "snippet": 25,
+            "guidelines": 71,
+            "paramDescriptions": 96
+          }
+        },
+        {
+          "name": "move",
+          "description": "Move an anchored block verbatim, within or across files.",
+          "snippet": "Move an anchored block",
+          "guidelines": [],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 56,
+            "snippet": 22,
+            "guidelines": 0,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "outline",
+          "description": "Map the symbols of a file, folder, or glob as anchor rows before reading it.",
+          "snippet": "Map a file's symbols before reading it",
+          "guidelines": [
+            "outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it."
+          ],
+          "paramDescriptions": [
+            "Nesting depth to show: 0 lists top-level symbols only, 1 adds their members (default 2, maximum 10)."
+          ],
+          "bytes": {
+            "description": 76,
+            "snippet": 38,
+            "guidelines": 137,
+            "paramDescriptions": 100
+          }
+        },
+        {
+          "name": "read",
+          "description": "Read a file as anchor│content rows; supports paging and images.",
+          "snippet": "Read files with line anchors",
+          "guidelines": [
+            "read: call again after an edit when you need anchors you lack.",
+            "Remember to use the hashline tools for every file read and edit: `read`, `replace`, `replace_match`, `insert`, `copy`, `move`, or `undo_last_change`."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 65,
+            "snippet": 28,
+            "guidelines": 211,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "replace",
+          "description": "Replace whole anchored lines. For part of a line, use replace_match.",
+          "snippet": "Replace anchored lines",
+          "guidelines": [
+            "replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.",
+            "edit tools: the payload is written exactly as received, without anchor prefixes, and the tool never decodes an escape — a real line break is a line break. [H_LITERAL_ESCAPE] counts the literal characters that landed; go by that count, not by a backslash-doubling rule. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.",
+            "edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST line to remove.",
+            "5-char anchor of the LAST line to remove.",
+            "The exact text to write in place of the removed range. \"\" deletes the range."
+          ],
+          "bytes": {
+            "description": 68,
+            "snippet": 22,
+            "guidelines": 749,
+            "paramDescriptions": 159
+          }
+        },
+        {
+          "name": "replace_match",
+          "description": "Replace one exact fragment across anchored lines.",
+          "snippet": "Replace fragments in lines",
+          "guidelines": [
+            "replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST line of the range searched.",
+            "5-char anchor of the LAST line of the range searched; same as `replace_from` for a single line."
+          ],
+          "bytes": {
+            "description": 49,
+            "snippet": 26,
+            "guidelines": 269,
+            "paramDescriptions": 149
+          }
+        },
+        {
+          "name": "undo_last_change",
+          "description": "Undo a file's latest hashline edit.",
+          "snippet": "Undo a file's last edit",
+          "guidelines": [
+            "undo_last_change: one slot per file; undo before any other edit or write to that file.",
+            "undo_last_change: undo a cross-file move on both files; undoing one side leaves lines duplicated or missing."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 35,
+            "snippet": 23,
+            "guidelines": 194,
+            "paramDescriptions": 0
+          }
+        }
+      ],
+      "total": {
+        "description": 553,
+        "snippet": 225,
+        "guidelines": 1986,
+        "paramDescriptions": 687,
+        "all": 3451
+      }
+    },
+    {
+      "id": "codemode",
+      "tools": [
+        {
+          "name": "copy",
+          "description": "Copy an anchored block verbatim, within or across files.",
+          "snippet": "Copy an anchored block",
+          "guidelines": [
+            "copy/move: move takes copy's fields. To append to a file, anchor its last line with direction after, not a marker line or the block's own end. Only the source's boundary rows and the destination line need reading.",
+            "`copy`/`move`: a call from a codemode script commits on its own and never joins a batch; a script cross-file `move` shows both the source and destination diffs."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST source line.",
+            "5-char anchor of the LAST source line.",
+            "5-char anchor of the destination line; the block lands before or after it and it may live in another file."
+          ],
+          "bytes": {
+            "description": 56,
+            "snippet": 22,
+            "guidelines": 373,
+            "paramDescriptions": 183
+          }
+        },
+        {
+          "name": "grep",
+          "description": "Search files with ripgrep; hits are N:│ anchor│content rows (N-│ context), editable without a read.",
+          "snippet": "Search with anchors",
+          "guidelines": [
+            "grep: set literal: true when the pattern contains regex metacharacters. A match shown as a ... fragment has an anchor covering the whole line.",
+            "`grep`: a codemode script receives `{ text, results }`; each `results[].lines[]` entry carries the matching line's `anchor` and `text`, so a result is editable without a fresh read."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 105,
+            "snippet": 19,
+            "guidelines": 323,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "insert",
+          "description": "Insert new lines before or after an anchor.",
+          "snippet": "Insert lines at an anchor",
+          "guidelines": [
+            "insert: check the diff for a missing or extra blank row at block edges."
+          ],
+          "paramDescriptions": [
+            "The exact text to insert; an empty string inserts one blank line. Never include the anchor line."
+          ],
+          "bytes": {
+            "description": 43,
+            "snippet": 25,
+            "guidelines": 71,
+            "paramDescriptions": 96
+          }
+        },
+        {
+          "name": "move",
+          "description": "Move an anchored block verbatim, within or across files.",
+          "snippet": "Move an anchored block",
+          "guidelines": [],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 56,
+            "snippet": 22,
+            "guidelines": 0,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "outline",
+          "description": "Map the symbols of a file, folder, or glob as anchor rows before reading it.",
+          "snippet": "Map a file's symbols before reading it",
+          "guidelines": [
+            "outline: a span starts at the declaration line; read the lines above it before deleting or moving a symbol, so its decorators go with it.",
+            "`outline`: a codemode script receives the served outline text; pass `anchors: true` to receive `{ text, lines, notices }` with editable anchors; a directory or glob returns `files: [{ path, lines, totalLines, truncated, complete }]` in place of `lines`."
+          ],
+          "paramDescriptions": [
+            "Nesting depth to show: 0 lists top-level symbols only, 1 adds their members (default 2, maximum 10)."
+          ],
+          "bytes": {
+            "description": 76,
+            "snippet": 38,
+            "guidelines": 390,
+            "paramDescriptions": 100
+          }
+        },
+        {
+          "name": "read",
+          "description": "Read a file as anchor│content rows; supports paging and images.",
+          "snippet": "Read files with line anchors",
+          "guidelines": [
+            "read: after an edit, + and space diff rows carry live anchors, - rows are dead, and rows the diff omits keep theirs; read again only for anchors you lack.",
+            "Remember to use the hashline tools for every file read and edit: `read`, `replace`, `replace_match`, `insert`, `copy`, `move`, or `undo_last_change`.",
+            "`read` in a codemode script resolves to the file's text, like the built-in `read`; pass `anchors: true` to receive `{ text, lines, notices }` with the raw file content and `lines[].anchor` for chained edits. An image read resolves to an image block.",
+            "`read`/`replace`/`replace_match`/`insert`/`copy`/`move`/`grep`/`undo_last_change`: when called from a codemode script, failures resolve to `{ ok: false, kind: \"error\", error: { code, message } }`; branch on `ok` instead of `try`/`catch`. Arguments that fail the tool's schema still throw before the tool runs."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 65,
+            "snippet": 28,
+            "guidelines": 861,
+            "paramDescriptions": 0
+          }
+        },
+        {
+          "name": "replace",
+          "description": "Replace whole anchored lines. For part of a line, use replace_match.",
+          "snippet": "Replace anchored lines",
+          "guidelines": [
+            "replace: one line uses the same anchor twice. A pure deletion checks only the boundary lines and removes the interior as it stands.",
+            "edit tools: the payload is written exactly as received, without anchor prefixes, and the tool never decodes an escape — a real line break is a line break. [H_LITERAL_ESCAPE] counts the literal characters that landed; go by that count, not by a backslash-doubling rule. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.",
+            "edit tools: same-file calls in one message form one batch — send the ones whose anchors you already hold together, and an edit that needs a previous result's anchors waits for the next turn; one undo reverts all.",
+            "edit tools: codemode script calls apply immediately in order, and only the most recent edit per file is undoable.",
+            "`replace`/`replace_match`/`insert`/`copy`/`move`: a codemode script receives `{ ok, kind: \"edit\", classification, diff, anchors, anchorsOmitted }`; reuse `anchors[].anchor` to chain the next edit, and read again when `anchorsOmitted` is true."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST line to remove.",
+            "5-char anchor of the LAST line to remove.",
+            "The exact text to write in place of the removed range. \"\" deletes the range."
+          ],
+          "bytes": {
+            "description": 68,
+            "snippet": 22,
+            "guidelines": 1104,
+            "paramDescriptions": 159
+          }
+        },
+        {
+          "name": "replace_match",
+          "description": "Replace one exact fragment across anchored lines.",
+          "snippet": "Replace fragments in lines",
+          "guidelines": [
+            "replace_match: match is only the fragment that changes and stays within one line; replacement may span lines, and every occurrence in the range changes, so narrow the anchors when only some lines should. If match covers the whole line, use replace with the same anchor."
+          ],
+          "paramDescriptions": [
+            "5-char anchor of the FIRST line of the range searched.",
+            "5-char anchor of the LAST line of the range searched; same as `replace_from` for a single line."
+          ],
+          "bytes": {
+            "description": 49,
+            "snippet": 26,
+            "guidelines": 269,
+            "paramDescriptions": 149
+          }
+        },
+        {
+          "name": "undo_last_change",
+          "description": "Undo a file's latest hashline edit.",
+          "snippet": "Undo a file's last edit",
+          "guidelines": [
+            "undo_last_change: one slot per file; undo before any other edit or write to that file.",
+            "undo_last_change: undo a cross-file move on both files; undoing one side leaves lines duplicated or missing.",
+            "`undo_last_change`: each edit from one codemode script takes the undo slot, so only the most recent is undoable."
+          ],
+          "paramDescriptions": [],
+          "bytes": {
+            "description": 35,
+            "snippet": 23,
+            "guidelines": 306,
+            "paramDescriptions": 0
+          }
+        }
+      ],
+      "total": {
+        "description": 553,
+        "snippet": 225,
+        "guidelines": 3697,
+        "paramDescriptions": 687,
+        "all": 5162
+      }
+    }
+  ]
+}

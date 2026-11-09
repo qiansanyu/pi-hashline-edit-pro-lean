@@ -1,8 +1,8 @@
 # model-facing text · 7.2.0-upstream · upstream
-# upstream 7.2.0 · lean 7.2.0-lean.1 · node v24.19.0 · win32
+# upstream 7.2.0 · lean 7.2.0-lean.2 · node v24.19.0 · win32
 
-## default  (9 tools, 14663 B)
-# total: desc 5511 B · snippet 1008 B · guidelines 5227 B · param-desc 2917 B
+## default  (9 tools, 14720 B)
+# total: desc 5511 B · snippet 1008 B · guidelines 5284 B · param-desc 2917 B
 
 ### copy  (1575 B)
 D  Duplicate a range of lines at another anchor. The source rows and anchors stay live; the copied lines get fresh anchors in the destination's post-edit diff and keep their source line endings.
@@ -78,7 +78,7 @@ P  Path to the file to read (relative or absolute)
 P  Line number (1-indexed) or a served anchor to start reading from
 P  Maximum number of lines to read from offset; counted from the anchor row when `offset` is an anchor
 
-### replace  (2227 B)
+### replace  (2284 B)
 D  Replace a range of lines (or a single line) in a text file by anchor. Deleting every line empties the file, and the result names the empty-line anchor, so a follow-up `replace` can seed content without a `read`.
 
 To change only part of a line without retyping the rest, use `replace_match` instead; it preserves every character the request does not name.
@@ -89,7 +89,7 @@ G  `replace`: for a single line, use the same anchor for `remove_from` and `remo
 G  `replace`/`replace_match`/`insert`/`copy`/`move`: same-file calls in one message commit as one batch. If you already know all the edits and their anchors, send them together instead of one turn at a time; an edit that needs anchors from a previous result waits for the next turn. Earlier calls reply `In batch N (queued)`, the last shows the combined diff, and one undo reverts all. A request-invalid call (anchors, shape, or `match`) fails alone; a failure while the batch runs aborts it.
 G  `replace`/`replace_match`/`insert`/`copy`/`move`: anchors resolve the file; `path` is optional but must match anchor ownership when passed.
 G  `replace`/`replace_match`/`insert`/`copy`/`move`/`undo_last_change`: in the post-edit diff, `-anchor│` rows are dead anchors; `+anchor│` and ` anchor│` rows carry live anchors for the next edit. Rows the diff does not show keep their anchors, so a follow-up edit on them needs no re-read.
-G  `replace`/`replace_match`/`insert`: `text` is written exactly as received; escapes are decoded once when the call is parsed, and the tool never decodes again — `\uXXXX` is the character, `\\uXXXX` the literal text.
+G  `replace`/`replace_match`/`insert`: the payload is written exactly as received and the tool never decodes an escape, so a real line break is a line break. `[H_LITERAL_ESCAPE]` counts the literal characters that landed — go by that count, not by a backslash-doubling rule.
 P  5-char anchor of the FIRST line to remove.
 P  5-char anchor of the LAST line to remove.
 P  The exact text to write in place of the removed range. "" deletes the range. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.
@@ -115,8 +115,8 @@ G  `undo_last_change`: a `write` clears the history, so undo before any other ed
 G  `undo_last_change`: a cross-file `move` records one undo entry per file; undo both the source and the destination to revert the whole move, because undoing one side alone leaves the moved lines duplicated or missing.
 P  Path to the file to undo
 
-## no-replace-match-no-copy-move  (9 tools, 14024 B)
-# total: desc 5340 B · snippet 1008 B · guidelines 4759 B · param-desc 2917 B
+## no-replace-match-no-copy-move  (9 tools, 14081 B)
+# total: desc 5340 B · snippet 1008 B · guidelines 4816 B · param-desc 2917 B
 
 ### copy  (1575 B)
 D  Duplicate a range of lines at another anchor. The source rows and anchors stay live; the copied lines get fresh anchors in the destination's post-edit diff and keep their source line endings.
@@ -191,7 +191,7 @@ P  Path to the file to read (relative or absolute)
 P  Line number (1-indexed) or a served anchor to start reading from
 P  Maximum number of lines to read from offset; counted from the anchor row when `offset` is an anchor
 
-### replace  (1978 B)
+### replace  (2035 B)
 D  Replace a range of lines (or a single line) in a text file by anchor. Deleting every line empties the file, and the result names the empty-line anchor, so a follow-up `replace` can seed content without a `read`.
 S  Replace lines by anchor: bare anchors in `remove_from`/`remove_to`, the exact replacement text in `text`
 G  `replace`: same-message calls must target disjoint ranges.
@@ -200,7 +200,7 @@ G  `replace`: for a single line, use the same anchor for `remove_from` and `remo
 G  `replace`/`insert`: same-file calls in one message commit as one batch. If you already know all the edits and their anchors, send them together instead of one turn at a time; an edit that needs anchors from a previous result waits for the next turn. Earlier calls reply `In batch N (queued)`, the last shows the combined diff, and one undo reverts all. A request-invalid call (anchors, shape, or `match`) fails alone; a failure while the batch runs aborts it.
 G  `replace`/`insert`: anchors resolve the file; `path` is optional but must match anchor ownership when passed.
 G  `replace`/`insert`/`undo_last_change`: in the post-edit diff, `-anchor│` rows are dead anchors; `+anchor│` and ` anchor│` rows carry live anchors for the next edit. Rows the diff does not show keep their anchors, so a follow-up edit on them needs no re-read.
-G  `replace`/`insert`: `text` is written exactly as received; escapes are decoded once when the call is parsed, and the tool never decodes again — `\uXXXX` is the character, `\\uXXXX` the literal text.
+G  `replace`/`insert`: the payload is written exactly as received and the tool never decodes an escape, so a real line break is a line break. `[H_LITERAL_ESCAPE]` counts the literal characters that landed — go by that count, not by a backslash-doubling rule.
 P  5-char anchor of the FIRST line to remove.
 P  5-char anchor of the LAST line to remove.
 P  The exact text to write in place of the removed range. "" deletes the range. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.
@@ -225,8 +225,8 @@ G  `undo_last_change`: history is one slot per file, not a stack; a second undo 
 G  `undo_last_change`: a `write` clears the history, so undo before any other edit or write; the undo diff's `+anchor│` rows are the restored lines.
 P  Path to the file to undo
 
-## auto-read-off  (9 tools, 14272 B)
-# total: desc 5511 B · snippet 1008 B · guidelines 4836 B · param-desc 2917 B
+## auto-read-off  (9 tools, 14329 B)
+# total: desc 5511 B · snippet 1008 B · guidelines 4893 B · param-desc 2917 B
 
 ### copy  (1575 B)
 D  Duplicate a range of lines at another anchor. The source rows and anchors stay live; the copied lines get fresh anchors in the destination's post-edit diff and keep their source line endings.
@@ -302,7 +302,7 @@ P  Path to the file to read (relative or absolute)
 P  Line number (1-indexed) or a served anchor to start reading from
 P  Maximum number of lines to read from offset; counted from the anchor row when `offset` is an anchor
 
-### replace  (1935 B)
+### replace  (1992 B)
 D  Replace a range of lines (or a single line) in a text file by anchor. Deleting every line empties the file, and the result names the empty-line anchor, so a follow-up `replace` can seed content without a `read`.
 
 To change only part of a line without retyping the rest, use `replace_match` instead; it preserves every character the request does not name.
@@ -312,7 +312,7 @@ G  `replace`: a pure deletion (`text: ""`) is the cheap way to clear a large ran
 G  `replace`: for a single line, use the same anchor for `remove_from` and `remove_to`.
 G  `replace`/`replace_match`/`insert`/`copy`/`move`: same-file calls in one message commit as one batch. If you already know all the edits and their anchors, send them together instead of one turn at a time; an edit that needs anchors from a previous result waits for the next turn. Earlier calls reply `In batch N (queued)`, the last shows the combined result, and one undo reverts all. A request-invalid call (anchors, shape, or `match`) fails alone; a failure while the batch runs aborts it.
 G  `replace`/`replace_match`/`insert`/`copy`/`move`: anchors resolve the file; `path` is optional but must match anchor ownership when passed.
-G  `replace`/`replace_match`/`insert`: `text` is written exactly as received; escapes are decoded once when the call is parsed, and the tool never decodes again — `\uXXXX` is the character, `\\uXXXX` the literal text.
+G  `replace`/`replace_match`/`insert`: the payload is written exactly as received and the tool never decodes an escape, so a real line break is a line break. `[H_LITERAL_ESCAPE]` counts the literal characters that landed — go by that count, not by a backslash-doubling rule.
 P  5-char anchor of the FIRST line to remove.
 P  5-char anchor of the LAST line to remove.
 P  The exact text to write in place of the removed range. "" deletes the range. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.
@@ -338,8 +338,8 @@ G  `undo_last_change`: only the last `replace`/`replace_match`/`insert`/`copy`/`
 G  `undo_last_change`: a cross-file `move` records one undo entry per file; undo both the source and the destination to revert the whole move, because undoing one side alone leaves the moved lines duplicated or missing.
 P  Path to the file to undo
 
-## codemode  (9 tools, 16476 B)
-# total: desc 5511 B · snippet 1008 B · guidelines 6826 B · param-desc 3131 B
+## codemode  (9 tools, 16533 B)
+# total: desc 5511 B · snippet 1008 B · guidelines 6883 B · param-desc 3131 B
 
 ### copy  (1735 B)
 D  Duplicate a range of lines at another anchor. The source rows and anchors stay live; the copied lines get fresh anchors in the destination's post-edit diff and keep their source line endings.
@@ -422,7 +422,7 @@ P  Line number (1-indexed) or a served anchor to start reading from
 P  Maximum number of lines to read from offset; counted from the anchor row when `offset` is an anchor
 P  Return { text, lines, notices } with editable anchors instead of the plain file text to a codemode script
 
-### replace  (2562 B)
+### replace  (2619 B)
 D  Replace a range of lines (or a single line) in a text file by anchor. Deleting every line empties the file, and the result names the empty-line anchor, so a follow-up `replace` can seed content without a `read`.
 
 To change only part of a line without retyping the rest, use `replace_match` instead; it preserves every character the request does not name.
@@ -434,7 +434,7 @@ G  `replace`/`replace_match`/`insert`/`copy`/`move`: same-file calls in one mess
 G  `replace`/`replace_match`/`insert`/`copy`/`move`: anchors resolve the file; `path` is optional but must match anchor ownership when passed.
 G  `replace`/`replace_match`/`insert`/`copy`/`move`: a codemode script receives `{ ok, kind: "edit", classification, diff, anchors, anchorsOmitted }`; reuse `anchors[].anchor` to chain the next edit, and read again when `anchorsOmitted` is true.
 G  `replace`/`replace_match`/`insert`/`copy`/`move`/`undo_last_change`: in the post-edit diff, `-anchor│` rows are dead anchors; `+anchor│` and ` anchor│` rows carry live anchors for the next edit. Rows the diff does not show keep their anchors, so a follow-up edit on them needs no re-read.
-G  `replace`/`replace_match`/`insert`: `text` is written exactly as received; escapes are decoded once when the call is parsed, and the tool never decodes again — `\uXXXX` is the character, `\\uXXXX` the literal text.
+G  `replace`/`replace_match`/`insert`: the payload is written exactly as received and the tool never decodes an escape, so a real line break is a line break. `[H_LITERAL_ESCAPE]` counts the literal characters that landed — go by that count, not by a backslash-doubling rule.
 P  5-char anchor of the FIRST line to remove.
 P  5-char anchor of the LAST line to remove.
 P  The exact text to write in place of the removed range. "" deletes the range. A trailing line break sets the newline of the last line written instead of adding a blank line; a lone newline writes one blank line.

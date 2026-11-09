@@ -11,7 +11,7 @@ fork 自 [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/
 | `main` | 与 fork 时刻完全一致的上游树。没有任何 fork 提交。rebase 目标。 |
 | `mine` | 全部 fork 提交，线性、无 merge。安装命令 pin 在这里；合并进 `main` 后即可去掉 pin。 |
 | `upstream-7.1.1` | `mine` 的旧名，与它同提交，只为让早先写下的安装命令继续可用；确认无人依赖后删除。 |
-| 运行时 `mine`（`qiansanyu/pi-hashline-edit-pro`） | `package.json` 依赖的运行时。承载唯一一处行为改动 `autoReadWrite`。 |
+| 运行时 `mine`（`qiansanyu/pi-hashline-edit-pro`） | `package.json` 依赖的运行时。承载行为改动 `autoReadWrite`，以及 `[H_LITERAL_ESCAPE]` 的计数文案（模型可见文本，非行为）；理由见下。 |
 
 不发布到 npm：`dependencies` 指向 git ref，所以安装是按 commit 复现，而不是按版本号。
 
@@ -20,11 +20,17 @@ fork 自 [`kunkun9527/pi-hashline-edit-pro-lean`](https://github.com/kunkun9527/
 | 方面 | 上游包装层 `6.4.6-lean.3` | 本 fork | 位置 |
 | --- | --- | --- | --- |
 | 运行时 | `pi-hashline-edit-pro@6.4.6` | `github:qiansanyu/pi-hashline-edit-pro#mine`（上游 7.2.0） | `package.json` |
-| 模型可见文本 | 6.4.6 的精简版 | 7.2.0 的精简版，`outline` 已移植 | `index.ts`、`tests/` |
+| 模型可见文本 | 6.4.6 的精简版 | 7.2.0 的精简版，`outline` 已移植；转义规则不照抄上游，改为指向 `[H_LITERAL_ESCAPE]` 的字符数 | `index.ts`、`tests/` |
 | 锚点 | 四字符 | 五字符小写，即 7.x 提供的形式 | `index.ts`、`tests/` |
 | 行为 | — | `autoReadWrite`（默认 `"full"`）：`write` 只回报行数，不回显整篇文件；这与上游保持默认时的输出一致 | 运行时 `mine` 分支 |
 | 度量 | 完整系统提示，一次性 | 仅工具文本，可复现的 harness，快照入库 | `bench/` |
 | 文档 | 6.4.6、原作者安装地址 | 7.2.0、本 fork 安装地址、差异与同步说明 | `README.md`、`README_zh-CN.md`、本文件 |
+
+### 转义规则为什么不照抄上游
+
+上游 7.2.0 的 payload 规则按「JSON 源」写：escapes are decoded once … `\uXXXX` 是那个字符、`\\uXXXX` 是字面文本。但工具拿到的是**值**而不是源：它逐字写入，一次调用是否被解一次由参数解析决定，不由这个扩展决定。照抄这句话等于给模型一个会算错的预判 —— 而「该写几个反斜杠」正是它动手前唯一的判断依据。
+
+所以这一行改为指向测量：payload 原样落地，落盘的真实字符数由 `[H_LITERAL_ESCAPE]` 报出，以计数为准。这样规则不依赖任何链路语义（换 provider、换模型都成立）。hint 的记法与计数在运行时仓库，本仓库只同步这一行文案；5 变体落盘矩阵、定位与去重的回灌联动，以及为什么"只改文案"会静默降级，记在运行时仓库的 `LOCAL-CHANGES.md` 第 2 节。
 
 ## 文档改到哪里
 
